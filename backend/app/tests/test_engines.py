@@ -117,6 +117,7 @@ def test_discovery_scoring_output_shape() -> None:
     assert result.disclaimer
     assert result.results[0].rank == 1
     assert result.results[0].final_score >= result.results[-1].final_score
+    assert result.results[0].beginner_summary
     assert result.results[0].key_reasons
     assert result.results[0].caution_points
     assert result.results[0].explanation_trace
@@ -129,6 +130,7 @@ def test_discovery_latest_endpoint_returns_ranked_results() -> None:
     payload = response.json()
     assert payload["universe_count"] == 10
     assert payload["results"][0]["rank"] == 1
+    assert payload["results"][0]["beginner_summary"]
     assert payload["results"][0]["final_score"] >= payload["results"][-1]["final_score"]
     assert payload["results"][0]["disclaimer"]
 

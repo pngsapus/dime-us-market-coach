@@ -35,12 +35,13 @@ Base URL: `/api`
   "generated_at": "2026-05-28T00:00:00Z",
   "universe_count": 10,
   "data_freshness": {},
-  "disclaimer": "ข้อมูล Discovery เป็นข้อมูลจำลองในเครื่อง ไม่ใช่ราคาจาก Dime โดยตรง และไม่ใช่คำสั่งซื้อ",
+  "disclaimer": "ข้อมูล Radar เป็นข้อมูลจำลองในเครื่อง ไม่ใช่ราคาจาก Dime โดยตรง และไม่ใช่คำสั่งซื้อ",
   "results": [
     {
       "symbol": "MSFT",
       "name": "Microsoft Corporation",
       "sector_theme": "Cloud and AI software",
+      "beginner_summary": "ธุรกิจขนาดใหญ่ กระแสเงินสดแข็งแรง และผันผวนน้อยกว่าหุ้นธีมร้อนหลายตัว",
       "rank": 1,
       "final_score": 75,
       "category": "ควรติดตาม",

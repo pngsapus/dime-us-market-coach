@@ -12,11 +12,19 @@ async function getJson<T>(path: string): Promise<ApiResult<T>> {
     if (!response.ok) {
       return {
         ok: false,
-        message: "ไม่สามารถเชื่อมต่อข้อมูลจำลองจาก backend ได้",
+        message: `backend ตอบกลับ HTTP ${response.status} สำหรับ ${path}`,
         retryPath: path,
       };
     }
-    return { ok: true, data: (await response.json()) as T };
+    try {
+      return { ok: true, data: (await response.json()) as T };
+    } catch {
+      return {
+        ok: false,
+        message: `อ่านข้อมูล JSON จาก backend ไม่สำเร็จสำหรับ ${path}`,
+        retryPath: path,
+      };
+    }
   } catch {
     return {
       ok: false,
@@ -35,7 +43,17 @@ export function getRadar() {
 }
 
 export function getDiscoveryLatest() {
-  return getJson<DiscoveryRun>("/discovery/latest");
+  return getJson<unknown>("/discovery/latest").then((result): ApiResult<DiscoveryRun> => {
+    if (!result.ok) return result;
+    if (!isDiscoveryRun(result.data)) {
+      return {
+        ok: false,
+        message: "รูปแบบข้อมูล Discovery จาก backend ไม่ตรงกับที่ Radar ต้องใช้",
+        retryPath: "/discovery/latest",
+      };
+    }
+    return { ok: true, data: result.data };
+  });
 }
 
 export function getStockExplain(symbol: string) {
@@ -52,4 +70,25 @@ export function getRiskProfile() {
 
 export function getDataStatus() {
   return getJson<DataStatus>("/data-status");
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function isDiscoveryRun(value: unknown): value is DiscoveryRun {
+  if (!isObject(value) || !Array.isArray(value.results)) return false;
+  return value.results.every((item) => (
+    isObject(item) &&
+    typeof item.symbol === "string" &&
+    typeof item.name === "string" &&
+    typeof item.beginner_summary === "string" &&
+    typeof item.rank === "number" &&
+    typeof item.final_score === "number" &&
+    typeof item.category === "string" &&
+    Array.isArray(item.key_reasons) &&
+    Array.isArray(item.caution_points) &&
+    Array.isArray(item.explanation_trace) &&
+    isObject(item.data_freshness)
+  ));
 }

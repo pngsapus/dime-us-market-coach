@@ -72,6 +72,7 @@ class DiscoveryResult(BaseModel):
     symbol: str
     name: str
     sector_theme: str
+    beginner_summary: str
     rank: int
     final_score: int
     category: str

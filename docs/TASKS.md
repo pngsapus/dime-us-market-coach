@@ -35,6 +35,7 @@
 - Phase 2A: expanded Stock Explain and Practice Plan compatibility for new local universe symbols.
 - Phase 2A: added discovery output folders under `backend/data/discovery/` with runtime JSON ignored by git.
 - Phase 2A: added backend tests for discovery scoring, endpoints, and Radar compatibility.
+- Phase 2A.1: cleaned up Radar UX copy, clarified sidebar vs recommended next steps, simplified cards, and translated discovery traces/categories for beginners.
 
 ## Next
 

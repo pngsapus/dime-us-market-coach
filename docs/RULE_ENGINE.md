@@ -33,8 +33,8 @@ Weighted score:
 
 Category rules:
 
-- If `data_freshness.is_stale` is true, category is `ข้อมูลไม่เพียงพอ`.
-- If `volatility_risk_score >= 78` or `valuation_risk_score >= 82`, category is `เสี่ยงสูงควรระวัง`.
+- If `data_freshness.is_stale` is true, category is `ข้อมูลไม่พอ`.
+- If `volatility_risk_score >= 78` or `valuation_risk_score >= 82`, category is `ควรระวัง`.
 - If final score is at least 70, category is `ควรติดตาม`.
 - Otherwise category is `รอจังหวะ`.
 

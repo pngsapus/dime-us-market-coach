@@ -4,11 +4,14 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from pydantic import ValidationError
+
 from app.core.constants import STATUS_FOLLOW, STATUS_WAIT
 from app.schemas.contracts import DataFreshness, DiscoveryResult, DiscoveryRun, LocalStockUniverseItem, StockSnapshot
 
-DISCOVERY_DISCLAIMER = "ข้อมูล Discovery เป็นข้อมูลจำลองในเครื่อง ไม่ใช่ราคาจาก Dime โดยตรง และไม่ใช่คำสั่งซื้อ"
-STATUS_HIGH_RISK_CAUTION = "เสี่ยงสูงควรระวัง"
+DISCOVERY_DISCLAIMER = "ข้อมูล Radar เป็นข้อมูลจำลองในเครื่อง ไม่ใช่ราคาจาก Dime โดยตรง และไม่ใช่คำสั่งซื้อ"
+STATUS_HIGH_RISK_CAUTION = "ควรระวัง"
+STATUS_DISCOVERY_INSUFFICIENT = "ข้อมูลไม่พอ"
 
 
 def _freshness(age_minutes: int = 15, stale: bool = False) -> DataFreshness:
@@ -260,7 +263,7 @@ class LocalMarketDiscoveryEngine:
         final_score = max(0, min(100, round(raw_score)))
 
         if item.data_freshness.is_stale:
-            category = "ข้อมูลไม่เพียงพอ"
+            category = STATUS_DISCOVERY_INSUFFICIENT
         elif item.volatility_risk_score >= 78 or item.valuation_risk_score >= 82:
             category = STATUS_HIGH_RISK_CAUTION
         elif final_score >= 70:
@@ -269,13 +272,13 @@ class LocalMarketDiscoveryEngine:
             category = STATUS_WAIT
 
         reasons = [
-            f"Trend score {item.trend_score}/100 และ momentum score {item.momentum_score}/100",
-            f"Quality score {item.quality_score}/100 และ liquidity score {item.liquidity_score}/100",
-            f"Beginner fit score {item.beginner_fit_score}/100 จากความง่ายในการติดตามธีมและความเสี่ยง",
+            f"แนวโน้ม {item.trend_score}/100 และโมเมนตัม {item.momentum_score}/100",
+            f"คุณภาพ {item.quality_score}/100 และสภาพคล่อง {item.liquidity_score}/100",
+            f"ความเหมาะสมกับมือใหม่ {item.beginner_fit_score}/100 จากความง่ายในการติดตามธีมและความเสี่ยง",
         ]
         cautions = [
-            f"Valuation risk score {item.valuation_risk_score}/100",
-            f"Volatility risk score {item.volatility_risk_score}/100",
+            f"ความเสี่ยงด้านมูลค่า {item.valuation_risk_score}/100",
+            f"ความเสี่ยงด้านความผันผวน {item.volatility_risk_score}/100",
             "ต้องตรวจสอบราคาจริงใน Dime ด้วยตนเองก่อนใช้ประกอบการพิจารณา",
         ]
         if item.data_freshness.is_stale:
@@ -284,17 +287,18 @@ class LocalMarketDiscoveryEngine:
             cautions.insert(0, "คะแนนรวมมีบางด้านน่าสนใจ แต่ความเสี่ยงสูงกว่าที่เหมาะกับผู้เริ่มต้นบางคน")
 
         trace = [
-            f"โหลด {item.symbol} จาก local mock universe",
-            "คำนวณ final_score จาก trend, momentum, quality, liquidity, beginner fit และหัก risk score",
-            f"raw_score={raw_score:.2f}, final_score={final_score}",
-            f"category={category}",
-            "ไม่มีการเรียก external API และไม่ใช้ AI ตัดสินใจ",
+            "ระบบเริ่มจากรายการหุ้นจำลองในเครื่อง",
+            "คำนวณคะแนนจากแนวโน้ม โมเมนตัม คุณภาพ สภาพคล่อง และความเหมาะสมกับมือใหม่",
+            "หักคะแนนจากความเสี่ยงด้านมูลค่าและความผันผวน",
+            f"คะแนนรวมของ {item.symbol} คือ {final_score}/100",
+            f"สรุปสถานะเป็น {category} เพื่อช่วยเลือกว่าจะศึกษาต่อหรือควรรอก่อน",
         ]
 
         return DiscoveryResult(
             symbol=item.symbol,
             name=item.name,
             sector_theme=item.sector_theme,
+            beginner_summary=item.beginner_description,
             rank=0,
             final_score=final_score,
             category=category,
@@ -334,7 +338,10 @@ class LocalMarketDiscoveryEngine:
         latest_path = self.output_dir / "latest_discovery.json"
         if not latest_path.exists():
             return self.run(write_files=True)
-        return DiscoveryRun.model_validate_json(latest_path.read_text(encoding="utf-8"))
+        try:
+            return DiscoveryRun.model_validate_json(latest_path.read_text(encoding="utf-8"))
+        except (ValidationError, json.JSONDecodeError):
+            return self.run(write_files=True)
 
     def write_output(self, result: DiscoveryRun) -> None:
         self.history_dir.mkdir(parents=True, exist_ok=True)

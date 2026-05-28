@@ -121,3 +121,24 @@ Validation:
 
 - Backend tests: `21 passed in 0.61s`.
 - Frontend build: `npm run build` completed successfully.
+
+## Phase 2A.1 Radar UX And Copy Cleanup
+
+Date: 2026-05-28
+
+Improved Radar clarity without changing external integrations or discovery architecture.
+
+- Clarified that the sidebar is the main navigation and in-page buttons are recommended next steps only.
+- Changed Radar title and intro to beginner-friendly Thai.
+- Added a `วิธีใช้หน้านี้` box to explain how to read status, score, reasons, cautions, and continue analysis.
+- Simplified each Radar card so rank, symbol, category, score, beginner summary, reasons, and cautions come first.
+- Moved detailed score components and explanation trace into a secondary expandable section.
+- Changed discovery category copy to `ควรติดตาม`, `รอจังหวะ`, `ควรระวัง`, and `ข้อมูลไม่พอ`.
+- Rewrote discovery explanation traces from developer-style mixed language to Thai beginner-facing steps.
+- Updated Dashboard copy to match the navigation model and Radar category wording.
+- Made old `latest_discovery.json` files regenerate automatically if the local output shape changes.
+
+Validation:
+
+- Backend tests: `21 passed`.
+- Frontend build: `npm run build` completed successfully.

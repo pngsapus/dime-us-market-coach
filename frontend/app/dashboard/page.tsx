@@ -22,7 +22,7 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <PageHeader
         title="ภาพรวมตลาดวันนี้"
-        description="เริ่มจากภาพรวมตลาด แล้วค่อยไปดู Radar หุ้นที่ควรติดตามจากข้อมูลจำลอง"
+        description="ดูภาพรวมตลาดก่อน แล้วเลือกได้ว่าจะไป Radar หรือใช้เมนูด้านซ้ายเพื่อข้ามไปหน้าที่ต้องการ"
         status={summary.status}
       />
       <WarningBox title="ขอบเขตข้อมูล">
@@ -45,12 +45,12 @@ export default async function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         <Card>
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-base font-semibold">ขั้นถัดไป: เลือกหุ้นจาก Radar</h2>
+            <h2 className="text-base font-semibold">ขั้นตอนแนะนำ: เลือกหุ้นจาก Radar</h2>
             <PageActions actions={[{ href: "/radar", label: "ไปที่ Radar", primary: true }]} />
           </div>
           {discovery && (
             <div className="mt-2 text-xs text-muted">
-              Discovery ล่าสุด {new Date(discovery.generated_at).toLocaleString("th-TH")} · ข้อมูล local/mock ไม่ใช่ราคาจาก Dime โดยตรง
+              Radar ล่าสุด {new Date(discovery.generated_at).toLocaleString("th-TH")} · ข้อมูลจำลองในเครื่อง ไม่ใช่ราคาจาก Dime โดยตรง
             </div>
           )}
           <div className="mt-4 divide-y divide-line">

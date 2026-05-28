@@ -39,6 +39,7 @@ export type DiscoveryResult = {
   symbol: string;
   name: string;
   sector_theme: string;
+  beginner_summary: string;
   rank: number;
   final_score: number;
   category: string;

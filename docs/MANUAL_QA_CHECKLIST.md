@@ -19,12 +19,15 @@ npm run dev
 ## Browser Checks
 
 - Dashboard: open `/dashboard`; confirm market summary, Radar preview, warning box, freshness card, and `ข้อมูลนี้ไม่ใช่ราคาจาก Dime โดยตรง` are visible.
-- Dashboard Discovery preview: confirm top 3 discovery items show rank, score, category, latest run time, and local/mock freshness.
+- Dashboard Radar preview: confirm top 3 items show rank, score, category, latest run time, and local/mock freshness.
 - Dashboard flow: click `ไปที่ Radar`.
 - Radar: confirm the local universe renders NVDA, AMD, MSFT, AAPL, TSLA, QQQ, COST, AMZN, GOOGL, and META.
-- Radar: confirm each item shows rank, final score, category/status badge, score components, key reasons, caution points, explanation trace, and freshness/mock warning.
-- Radar flow: click `ดูคำอธิบาย` for NVDA.
-- Radar compatibility: click `ดูคำอธิบาย` for a newer universe symbol such as MSFT and confirm Stock Explain works.
+- Radar: confirm the page explains that sidebar navigation can be used anytime and in-page buttons are recommended next steps only.
+- Radar: confirm `วิธีใช้หน้านี้` explains status/score, reasons/cautions, choosing a stock, and going to explain/plan pages.
+- Radar: confirm each item shows rank, symbol, company name, category/status badge, score, beginner summary, max 3 reasons, max 3 cautions, and short freshness label.
+- Radar: expand `ดูรายละเอียดคะแนนและร่องรอยการจัดอันดับ` and confirm score components plus Thai explanation trace are visible.
+- Radar flow: click `อ่านคำอธิบาย` for NVDA.
+- Radar compatibility: click `อ่านคำอธิบาย` for a newer universe symbol such as MSFT and confirm Stock Explain works.
 - Stock Explain: confirm it is not blank and shows symbol, company name, status, price, VWAP, support, resistance, reasons, cautions, explanation trace, data freshness, Radar button, and Practice Plan button.
 - Stock Explain flow: click `ไปที่แผนวิเคราะห์จำลอง`.
 - Practice Plan: confirm it shows backend mock plan data, warning box, explanation trace, and does not show `frontend fallback`.
