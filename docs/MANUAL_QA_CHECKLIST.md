@@ -30,9 +30,11 @@ npm run dev
 - Journal: confirm the new item appears in `รายการล่าสุด` without manually refreshing.
 - Journal: submit with empty Symbol and confirm a Thai validation message appears.
 - Journal: submit with empty reason and empty lesson learned and confirm a Thai validation message appears.
+- Journal persistence: restart the backend and confirm saved entries are still visible.
 - Settings: open `/settings`; confirm Thai labels for risk profile fields.
 - Settings: change risk values, click `บันทึก Risk Profile`, and confirm `บันทึก Risk Profile เรียบร้อย` appears.
 - Settings: navigate away and back to `/settings`; confirm saved values remain visible during the same backend session.
+- Settings persistence: restart the backend and confirm saved values remain visible.
 - Data Status: open `/data-status`; confirm polished Thai provider and health labels.
 
 ## Forbidden Wording Check

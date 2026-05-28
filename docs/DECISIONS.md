@@ -8,3 +8,11 @@
 - Use in-memory journal/settings for scaffold speed; SQLite remains the V1 persistence target for the next implementation phase.
 - Dime Check accepts user-entered price and does not claim direct Dime realtime data.
 - Notification Center is an in-app placeholder only.
+
+## 2026-05-28 Phase 1B
+
+- Replace in-memory Settings and Journal storage with SQLite for V1 persistence.
+- Store the default database at `backend/data/app.db`.
+- Create the `backend/data` directory automatically if missing.
+- Keep API contracts stable for `GET/POST /api/settings/risk-profile` and `GET/POST /api/journal`.
+- Avoid migration tooling for now; use simple schema initialization in the backend repository layer.

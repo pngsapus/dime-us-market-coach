@@ -19,10 +19,12 @@
 - Added backend tests for saving Risk Profile and Journal entries.
 - Added backend Journal validation for missing symbol, decision, and missing reason/lesson.
 - Fixed Settings submit button stuck state by replacing click-based pending state with form submission status and adding timeout handling for backend calls.
+- Phase 1B: replaced in-memory Settings and Journal storage with SQLite persistence.
+- Phase 1B: added automatic SQLite schema initialization under `backend/data/app.db`.
+- Phase 1B: added backend tests for repository reload persistence and newest-first Journal ordering.
 
 ## Next
 
-- Add SQLite persistence for journal and risk profile.
 - Add API integration tests for all endpoints.
 - Add frontend component tests or Playwright smoke tests.
 - Add real provider interface implementation only after explicit approval.

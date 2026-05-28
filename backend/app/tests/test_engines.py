@@ -1,4 +1,11 @@
+import os
+from pathlib import Path
+import tempfile
+
 from fastapi.testclient import TestClient
+
+_test_data_dir = tempfile.TemporaryDirectory()
+os.environ["DIME_DB_PATH"] = str(Path(_test_data_dir.name) / "test_app.db")
 
 from app.core.constants import (
     STATUS_DO_NOT_CHASE,
@@ -8,10 +15,11 @@ from app.core.constants import (
     STATUS_PRICE_NOT_IN_ZONE,
 )
 from app.main import app
-from app.schemas.contracts import RiskProfile, Zone
+from app.schemas.contracts import JournalEntryCreate, RiskProfile, Zone
 from app.services.providers.mock_provider import provider
 from app.services.risk_engine import RiskEngine
 from app.services.rule_engine import RuleEngine
+from app.services.sqlite_store import SQLiteStore
 
 client = TestClient(app)
 
@@ -116,6 +124,22 @@ def test_settings_post_saves_values_and_get_returns_updated_values() -> None:
     assert get_response.json() == payload
 
 
+def test_settings_values_survive_repository_reload() -> None:
+    db_path = Path(_test_data_dir.name) / "settings_reload.db"
+    first_store = SQLiteStore(db_path)
+    payload = RiskProfile(
+        beginner_level="confident",
+        max_loss_per_trade_thb=2400,
+        max_trades_per_day=4,
+        minimum_risk_reward=2.2,
+        preferred_setup_type="pullback-reload",
+    )
+    first_store.save_risk_profile(payload)
+
+    second_store = SQLiteStore(db_path)
+    assert second_store.get_risk_profile() == payload
+
+
 def test_journal_post_creates_entry_and_get_returns_it() -> None:
     payload = {
         "symbol": "nvda",
@@ -132,6 +156,48 @@ def test_journal_post_creates_entry_and_get_returns_it() -> None:
     get_response = client.get("/api/journal")
     assert get_response.status_code == 200
     assert any(entry["id"] == saved["id"] for entry in get_response.json())
+
+
+def test_journal_entries_return_newest_first() -> None:
+    first_payload = {
+        "symbol": "AMD",
+        "decision": "รอจังหวะ",
+        "reason": "รายการเก่ากว่า",
+        "result": "",
+        "lesson_learned": "",
+    }
+    second_payload = {
+        "symbol": "TSLA",
+        "decision": "รอจังหวะ",
+        "reason": "รายการใหม่กว่า",
+        "result": "",
+        "lesson_learned": "",
+    }
+    first = client.post("/api/journal", json=first_payload).json()
+    second = client.post("/api/journal", json=second_payload).json()
+
+    entries = client.get("/api/journal").json()
+    ids = [entry["id"] for entry in entries]
+    assert ids.index(second["id"]) < ids.index(first["id"])
+
+
+def test_journal_entries_survive_repository_reload() -> None:
+    db_path = Path(_test_data_dir.name) / "journal_reload.db"
+    first_store = SQLiteStore(db_path)
+    saved = first_store.create_journal_entry(
+        entry=JournalEntryCreate(
+            symbol="NVDA",
+            decision="รอจังหวะ",
+            reason="ทดสอบการเปิด repository ใหม่",
+            result="",
+            lesson_learned="ข้อมูลยังอยู่ใน SQLite",
+        )
+    )
+
+    second_store = SQLiteStore(db_path)
+    entries = second_store.list_journal_entries()
+    assert entries[0].id == saved.id
+    assert entries[0].symbol == "NVDA"
 
 
 def test_journal_validation_rejects_missing_required_fields() -> None:

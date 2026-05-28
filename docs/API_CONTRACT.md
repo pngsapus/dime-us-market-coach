@@ -21,6 +21,7 @@ Base URL: `/api`
 - Analysis responses include `explanation_trace`.
 - Market-related responses include `data_freshness`.
 - Dime Check never assumes live Dime price; it only evaluates the user-entered price.
+- Settings and Journal responses keep the same JSON shape while using SQLite persistence in V1.
 
 ## Dime Check Request
 

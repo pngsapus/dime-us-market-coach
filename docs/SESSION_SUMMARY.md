@@ -53,3 +53,17 @@ Updated the Settings and Journal forms after manual QA found save buttons appear
 Date: 2026-05-28
 
 Manual QA showed `บันทึก Risk Profile` changed to `กำลังบันทึก...` and never completed. The cause was the client submit button setting its own pending state during the click event, which disabled the submit button before the native form submission could reliably finish. The fix uses React form submission status instead of click-time state and adds a timeout wrapper around backend fetch calls so `/settings/save` always redirects to either `/settings?saved=1` or `/settings?error=...`.
+
+## Phase 1B SQLite Persistence
+
+Date: 2026-05-28
+
+Replaced in-memory persistence for Settings and Journal with SQLite while keeping the existing API response shapes stable.
+
+- Added `app/services/sqlite_store.py`.
+- Default database path is `backend/data/app.db`.
+- The backend creates `backend/data` and initializes tables automatically.
+- `risk_profile` stores the single current risk profile row.
+- `journal_entries` stores journal entries and returns them newest first.
+- Tests use `DIME_DB_PATH` to isolate SQLite data in a temporary database.
+- Persistence now survives backend restart, while market data and Dime price checks remain mock-only.
