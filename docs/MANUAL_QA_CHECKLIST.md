@@ -29,7 +29,7 @@ npm run dev
 - Dime Check: enter `134` for NVDA and confirm status `ไม่ควรไล่ซื้อ`, reason, Risk:Reward, action, disclaimer, and explanation trace.
 - Dime Check: enter `131` for NVDA and confirm status `แผนยังอยู่ในเกณฑ์`.
 - Dime Check: enter `128` for NVDA and confirm status `ราคายังไม่เข้าโซน`.
-- Dime Check flow: click `บันทึกบทเรียนใน Journal`.
+- Dime Check flow: click `บันทึกบทเรียนในบันทึกการฝึกวิเคราะห์`.
 - Journal: open `/journal`; confirm Thai placeholders `เหตุผล` and `บทเรียนที่ได้`.
 - Journal: save a valid entry and confirm `บันทึกเรียบร้อย` appears.
 - Journal: confirm the new item appears in `รายการล่าสุด` without manually refreshing.
@@ -42,6 +42,9 @@ npm run dev
 - Settings persistence: restart the backend and confirm saved values remain visible.
 - Data Status: open `/data-status`; confirm polished Thai provider and health labels.
 - Loading/error states: stop backend temporarily and confirm affected pages show a visible error state instead of a blank page.
+- Responsive layout: check `/dashboard`, `/radar`, `/stocks/NVDA/explain`, `/stocks/NVDA/practice-plan`, `/dime-check`, `/journal`, `/settings`, and `/data-status` on desktop and a narrow mobile viewport; confirm there is no horizontal overflow.
+- Phase 1D restart check: save Settings and Journal through the frontend, restart only the backend, then confirm the saved Risk Profile and latest Journal entry remain visible.
+- Phase 1D degraded-state check: stop the backend and reload `/dashboard`; confirm the page shows `ไม่สามารถเชื่อมต่อข้อมูลจำลองจาก backend ได้` with a retry action instead of stale analysis content.
 
 ## Forbidden Wording Check
 
@@ -67,3 +70,11 @@ Confirm these endpoints return HTTP 200 and expected fields:
 - `GET /api/stocks/NVDA/practice-plan`: `status`, `data_freshness`, `explanation_trace`, `reasons`, `cautions`
 - `POST /api/dime/check-price`: `status`, `data_freshness`, `explanation_trace`, `reason`, `action`
 - `GET /api/data-status`: provider health, freshness, and limitations
+
+## Phase 1D QA Result
+
+- Main flow rendered without blank pages during automated browser smoke checks.
+- Dime Check returned `ไม่ควรไล่ซื้อ`, `แผนยังอยู่ในเกณฑ์`, and `ราคายังไม่เข้าโซน` for the tested price zones.
+- Settings and Journal persisted after backend restart using `backend/data/app.db`.
+- Desktop and 390px mobile checks showed no horizontal overflow across key pages.
+- Forbidden wording scan across frontend/backend source returned no matches outside guardrail-only files.

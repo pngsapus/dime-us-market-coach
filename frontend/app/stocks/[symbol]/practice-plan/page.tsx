@@ -22,7 +22,7 @@ export default async function PracticePlanPage({ params }: PageProps) {
       <div className="space-y-5">
         <PageHeader title={`${symbol.toUpperCase()} แผนวิเคราะห์จำลอง`} description="ไม่สามารถโหลดแผนจาก backend mock API ได้" />
         <ApiErrorState retryHref={`/stocks/${symbol}/practice-plan`} />
-        <PageActions actions={[{ href: `/stocks/${symbol}/explain`, label: "กลับไป Stock Explain" }]} />
+        <PageActions actions={[{ href: `/stocks/${symbol}/explain`, label: "กลับไปหน้าอธิบายหุ้น" }]} />
       </div>
     );
   }

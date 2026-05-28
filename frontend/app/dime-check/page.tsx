@@ -93,7 +93,7 @@ export default async function DimeCheckPage({ searchParams }: PageProps) {
           </div>
 
           <div className="mt-5">
-            <PageActions actions={[{ href: "/journal", label: "บันทึกบทเรียนใน Journal", primary: true }]} />
+            <PageActions actions={[{ href: "/journal", label: "บันทึกบทเรียนในบันทึกการฝึกวิเคราะห์", primary: true }]} />
           </div>
         </Card>
       )}

@@ -81,3 +81,22 @@ Improved the frontend user flow and clarity without changing backend contracts o
 - Improved Dime Check result presentation with status, reason, Risk:Reward, action, disclaimer, and explanation trace.
 - Added app-level loading and error states to avoid blank white pages.
 - Polished Thai labels in the sidebar and key pages.
+
+## Phase 1D QA, Bug Fix, And Stabilization
+
+Date: 2026-05-28
+
+Completed a stabilization-focused QA pass without changing architecture or adding external integrations.
+
+- Verified the main browser flow: Dashboard -> Radar -> Stock Explain -> Practice Plan -> Dime Check -> Journal.
+- Verified Dime Check result states for above-zone, inside-zone, and below-zone prices.
+- Verified Settings and Journal save through the Next route handlers, then confirmed SQLite values survived a backend restart.
+- Verified backend-down behavior shows a visible degraded/error state instead of stale analysis content.
+- Checked desktop and 390px mobile layouts for horizontal overflow across key pages.
+- Ran a forbidden wording scan across user-facing frontend/backend source.
+- Fixed small copy/documentation issues found during QA: replaced remaining English flow labels, updated Journal CTA wording, and aligned the documented below-entry Dime status with `ราคายังไม่เข้าโซน`.
+
+Validation:
+
+- Backend tests: `16 passed in 0.56s`.
+- Frontend build: `npm run build` completed successfully.

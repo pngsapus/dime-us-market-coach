@@ -26,6 +26,8 @@
 - Phase 1C: tightened the main user flow from Dashboard to Radar, Stock Explain, Practice Plan, Dime Check, and Journal.
 - Phase 1C: polished Thai copy and clarified mock/degraded data boundaries across key pages.
 - Phase 1C: added app-level loading and error states to avoid blank pages.
+- Phase 1D: completed QA stabilization pass across key pages, API smoke checks, responsive layout checks, persistence restart checks, and forbidden wording scan.
+- Phase 1D: fixed small Thai copy/documentation inconsistencies found during QA, including remaining English page wording and below-zone Dime Check documentation.
 
 ## Next
 

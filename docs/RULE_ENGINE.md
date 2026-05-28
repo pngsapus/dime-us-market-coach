@@ -13,6 +13,6 @@ Rule decisions are deterministic and based on explicit inputs.
 
 - If provider data is stale, status is `ข้อมูลไม่เพียงพอ`.
 - If user-entered Dime price is above the entry zone, status is `ไม่ควรไล่ซื้อ`.
-- If user-entered Dime price is below the entry zone, status is `แผนยกเลิก`.
+- If user-entered Dime price is below the entry zone, status is `ราคายังไม่เข้าโซน`.
 - If price is inside the entry zone but Risk:Reward is below profile minimum, status is `ไม่ควรไล่ซื้อ`.
 - If price is inside the entry zone and Risk:Reward passes, status is `แผนยังอยู่ในเกณฑ์`.
