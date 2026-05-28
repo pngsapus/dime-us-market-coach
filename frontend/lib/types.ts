@@ -137,11 +137,15 @@ export type DataStatus = {
   has_trading_integration: boolean;
   is_discovery_local_rule_based: boolean;
   provider_status: {
+    provider_available: boolean;
     provider_name: string;
     provider_type: string;
     is_available: boolean;
     is_live_data: boolean;
     is_direct_dime_data: boolean;
+    is_degraded: boolean;
+    fallback_used: boolean;
+    fallback_reason: string;
     last_updated: string;
     freshness_label: string;
     limitations: string[];

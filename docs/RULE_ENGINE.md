@@ -23,6 +23,8 @@ Discovery scoring is deterministic and uses local/mock data only.
 
 Phase 2B keeps the same scoring rules, but the discovery engine now reads the stock universe from the active provider layer instead of owning raw universe data directly. The active provider is still `mock`.
 
+Phase 2C keeps scoring unchanged. If provider resolution falls back to mock/local, discovery still scores the fallback mock universe and `/api/data-status` reports the fallback/degraded provider state.
+
 Weighted score:
 
 - `trend_score` weight 22%.

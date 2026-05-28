@@ -82,17 +82,23 @@ Base URL: `/api`
   "has_trading_integration": false,
   "is_discovery_local_rule_based": true,
   "provider_status": {
+    "provider_available": true,
     "provider_name": "mock",
     "provider_type": "mock/local",
     "is_available": true,
     "is_live_data": false,
     "is_direct_dime_data": false,
+    "is_degraded": false,
+    "fallback_used": false,
+    "fallback_reason": "",
     "freshness_label": "ข้อมูลจำลองในเครื่องพร้อมใช้งาน",
     "limitations": [],
     "disclaimer": "ข้อมูลจาก provider mock/local ใช้เพื่อการวิเคราะห์และฝึกวางแผนเท่านั้น ไม่ใช่ราคาจาก Dime โดยตรง"
   }
 }
 ```
+
+If `MARKET_DATA_PROVIDER` is unknown or points to the future stub, the active data source remains mock/local and `provider_status.fallback_used` is true with a beginner-readable `fallback_reason`.
 
 ## Dime Check Request
 

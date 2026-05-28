@@ -14,11 +14,15 @@ class DataFreshness(BaseModel):
 
 
 class ProviderStatus(BaseModel):
+    provider_available: bool
     provider_name: str
     provider_type: str
     is_available: bool
     is_live_data: bool
     is_direct_dime_data: bool
+    is_degraded: bool
+    fallback_used: bool
+    fallback_reason: str
     last_updated: datetime
     freshness_label: str
     limitations: list[str]

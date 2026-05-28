@@ -32,12 +32,21 @@ export default async function DataStatusPage() {
         </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <StatusMetric label="ประเภท provider" value={status.provider_type} />
+          <StatusMetric label="Mock fallback" value={status.provider_status.fallback_used ? "กำลังใช้ mock/local fallback" : "ไม่ได้ใช้ fallback"} />
           <StatusMetric label="ข้อมูลตลาดจริง" value={status.is_live_market_data_connected ? "เชื่อมต่อแล้ว" : "ยังไม่เชื่อมต่อ"} />
           <StatusMetric label="ราคาจาก Dime" value={status.is_dime_price_source_connected ? "เชื่อมต่อแล้ว" : "manual input เท่านั้น"} />
           <StatusMetric label="Trading integration" value={status.has_trading_integration ? "เชื่อมต่อแล้ว" : "ไม่มีการเชื่อมต่อ"} />
           <StatusMetric label="Discovery engine" value={status.is_discovery_local_rule_based ? "local rule-based mock data" : "ไม่พร้อมใช้งาน"} />
           <StatusMetric label="ความพร้อม provider" value={status.provider_status.freshness_label} />
         </div>
+        {status.provider_status.fallback_reason && (
+          <div className="mt-4 rounded-md border border-amber-100 bg-amber-50 p-3 text-sm leading-6 text-warn">
+            {status.provider_status.fallback_reason}
+          </div>
+        )}
+        <p className="mt-4 text-sm leading-6 text-muted">
+          ความพร้อมสำหรับอนาคต: โครงสร้าง provider พร้อมรองรับการเพิ่มผู้ให้บริการข้อมูลจริงในภายหลัง แต่ตอนนี้ยังไม่มี live market data, Dime API, หรือ trading integration
+        </p>
         <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-muted">{status.limitations.map((item) => <li key={item}>{item}</li>)}</ul>
       </Card>
       <DataFreshnessCard freshness={status.freshness} />

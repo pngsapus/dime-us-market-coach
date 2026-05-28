@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from app.schemas.contracts import DataStatus
-from app.services.providers.provider_registry import get_active_provider, get_provider_resolution
+from app.services.providers.provider_registry import get_active_provider, get_provider_resolution, get_provider_status
 
 router = APIRouter(tags=["data-status"])
 
@@ -10,9 +10,9 @@ router = APIRouter(tags=["data-status"])
 def get_data_status() -> DataStatus:
     provider = get_active_provider()
     resolution = get_provider_resolution()
-    provider_status = provider.get_data_status()
+    provider_status = get_provider_status()
     freshness = provider.get_market_summary().data_freshness
-    health = "healthy" if provider_status.is_available and not resolution.used_fallback else "degraded"
+    health = "healthy" if provider_status.is_available and not provider_status.is_degraded else "degraded"
     limitations = [
         "ข้อมูลตลาดยังเป็น mock/local data เท่านั้น",
         "Discovery engine เป็น local rule-based mock data และไม่เรียก external API",

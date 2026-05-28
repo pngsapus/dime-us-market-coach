@@ -14,6 +14,8 @@ Phase 2B prepares a provider registry while keeping mock/local as the only activ
 - Config key: `MARKET_DATA_PROVIDER`, defaulting to `mock`.
 - Unknown provider names safely fall back to mock/local and are reported as degraded in `/api/data-status`.
 - No API keys, real providers, Dime API, or external calls are used.
+- Phase 2C adds `real_provider_stub.py` as a non-active placeholder. It never calls external APIs, never requires credentials, and reports `not configured / not implemented`.
+- Provider status includes availability, degraded state, fallback state, live-data flags, Dime-source flags, limitations, freshness label, and disclaimer.
 
 Provider methods:
 
@@ -21,6 +23,21 @@ Provider methods:
 - `get_stock_universe()`
 - `get_stock_snapshot(symbol)`
 - `get_data_status()`
+
+Provider readiness fields:
+
+- `provider_available`
+- `provider_name`
+- `provider_type`
+- `is_live_data`
+- `is_direct_dime_data`
+- `is_degraded`
+- `fallback_used`
+- `fallback_reason`
+- `limitations`
+- `last_updated`
+- `freshness_label`
+- `disclaimer`
 
 Core deterministic services:
 

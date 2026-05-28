@@ -41,6 +41,10 @@
 - Phase 2B: moved the local stock universe behind the mock provider so discovery consumes provider data.
 - Phase 2B: expanded `/api/data-status` with provider readiness, live-data, Dime-source, trading-integration, and discovery-mode fields.
 - Phase 2B: added backend tests for provider registry, fallback behavior, mock provider output, provider-based discovery, and data status.
+- Phase 2C: hardened provider QA fields for degraded and fallback states.
+- Phase 2C: added a non-active `real_provider_stub.py` placeholder that never calls external APIs or requires credentials.
+- Phase 2C: updated Data Status UI to show mock fallback state and future-provider readiness.
+- Phase 2C: added backend tests for real stub behavior, fallback status shape, and discovery through fallback provider data.
 
 ## Next
 

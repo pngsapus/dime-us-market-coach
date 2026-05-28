@@ -18,7 +18,7 @@ from app.main import app
 from app.schemas.contracts import JournalEntryCreate, RiskProfile, Zone
 from app.services.discovery_engine import LocalMarketDiscoveryEngine
 from app.services.providers.mock_provider import provider
-from app.services.providers.provider_registry import get_active_provider, resolve_provider
+from app.services.providers.provider_registry import get_active_provider, get_provider_by_name, get_provider_status, resolve_provider
 from app.services.risk_engine import RiskEngine
 from app.services.rule_engine import RuleEngine
 from app.services.sqlite_store import SQLiteStore
@@ -113,8 +113,12 @@ def test_explanation_trace_exists_for_every_analysis_result() -> None:
 
 def test_provider_registry_defaults_to_mock_provider() -> None:
     active_provider = get_active_provider()
+    status = get_provider_status()
     assert active_provider.provider_name == "mock"
     assert active_provider.provider_type == "mock/local"
+    assert status.provider_available is True
+    assert status.fallback_used is False
+    assert status.is_degraded is False
 
 
 def test_provider_registry_unknown_provider_falls_back_to_mock() -> None:
@@ -124,14 +128,50 @@ def test_provider_registry_unknown_provider_falls_back_to_mock() -> None:
     assert resolution.requested_provider == "not-real"
 
 
+def test_unknown_provider_fallback_status_shape() -> None:
+    active_provider, resolution = resolve_provider("not-real")
+    status = active_provider.get_data_status().model_copy(
+        update={
+            "is_degraded": resolution.used_fallback,
+            "fallback_used": resolution.used_fallback,
+            "fallback_reason": resolution.message,
+        }
+    )
+    assert status.provider_available is True
+    assert status.provider_name == "mock"
+    assert status.provider_type == "mock/local"
+    assert status.is_live_data is False
+    assert status.is_direct_dime_data is False
+    assert status.is_degraded is True
+    assert status.fallback_used is True
+    assert status.fallback_reason
+    assert status.limitations
+    assert status.disclaimer
+
+
+def test_real_provider_stub_is_not_active_by_default() -> None:
+    active_provider = get_active_provider()
+    stub = get_provider_by_name("real_stub")
+    fallback_provider, resolution = resolve_provider("real_stub")
+    assert active_provider.provider_name == "mock"
+    assert stub is not None
+    assert stub.get_data_status().provider_available is False
+    assert stub.get_data_status().is_degraded is True
+    assert fallback_provider.provider_name == "mock"
+    assert resolution.used_fallback is True
+
+
 def test_mock_provider_output_shape() -> None:
     status = provider.get_data_status()
     universe = provider.get_stock_universe()
     snapshot = provider.get_stock_snapshot("NVDA")
     assert status.provider_name == "mock"
     assert status.provider_type == "mock/local"
+    assert status.provider_available is True
     assert status.is_live_data is False
     assert status.is_direct_dime_data is False
+    assert status.is_degraded is False
+    assert status.fallback_used is False
     assert len(universe) == 10
     assert snapshot.symbol == "NVDA"
     assert snapshot.data_freshness.provider == "mock"
@@ -210,6 +250,21 @@ def test_data_status_reports_mock_local_provider() -> None:
     assert payload["is_dime_price_source_connected"] is False
     assert payload["has_trading_integration"] is False
     assert payload["is_discovery_local_rule_based"] is True
+    assert payload["provider_status"]["provider_available"] is True
+    assert payload["provider_status"]["fallback_used"] is False
+    assert payload["provider_status"]["is_degraded"] is False
+
+
+def test_discovery_still_works_with_unknown_provider_fallback() -> None:
+    fallback_provider, resolution = resolve_provider("unknown-real-provider")
+    result = LocalMarketDiscoveryEngine(
+        output_dir=Path(_test_data_dir.name) / "discovery_fallback",
+        provider=fallback_provider,
+    ).run(write_files=False)
+    assert resolution.used_fallback is True
+    assert result.universe_count == 10
+    assert result.results[0].rank == 1
+    assert result.data_freshness.provider == "mock"
 
 
 def test_settings_post_saves_values_and_get_returns_updated_values() -> None:

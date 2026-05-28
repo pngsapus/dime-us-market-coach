@@ -30,3 +30,10 @@
 - Keep mock/local as the only active provider and do not introduce API keys or external calls.
 - If an unknown provider is configured, fall back to mock/local and surface the fallback through `/api/data-status`.
 - Move local stock universe ownership into the provider layer so discovery can later score a real provider universe without changing the scoring contract.
+
+## 2026-05-28 Phase 2C
+
+- Add a real provider stub only as a future integration placeholder.
+- The stub must never call external APIs, require credentials, or become active by default.
+- Treat `real_stub` as fallback-only until a future phase explicitly implements and validates a real provider.
+- Expand provider status fields so degraded and fallback states are visible to the backend, frontend, and manual QA.

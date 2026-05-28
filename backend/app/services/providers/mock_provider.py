@@ -293,11 +293,15 @@ class MockMarketDataProvider(MarketDataProvider):
     def get_data_status(self) -> ProviderStatus:
         now = datetime.now(timezone.utc)
         return ProviderStatus(
+            provider_available=True,
             provider_name=self.provider_name,
             provider_type=self.provider_type,
             is_available=True,
             is_live_data=False,
             is_direct_dime_data=False,
+            is_degraded=False,
+            fallback_used=False,
+            fallback_reason="",
             last_updated=now,
             freshness_label="ข้อมูลจำลองในเครื่องพร้อมใช้งาน",
             limitations=[

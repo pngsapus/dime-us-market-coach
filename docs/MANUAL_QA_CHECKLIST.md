@@ -49,6 +49,8 @@ npm run dev
 - Data Status: open `/data-status`; confirm polished Thai provider and health labels.
 - Data Status: confirm it says market data is mock/local, Dime price source is manual input only, no external API is connected, no trading integration exists, and discovery is local rule-based mock data.
 - Data Status provider layer: confirm active provider is mock/local, live market data is not connected, Dime price source is manual input only, trading integration is absent, and provider readiness says mock/local data is available.
+- Data Status fallback fields: confirm mock fallback says it is not being used during normal `MARKET_DATA_PROVIDER=mock` startup.
+- Provider QA: optionally start backend with `MARKET_DATA_PROVIDER=real_stub` or an unknown value and confirm `/api/data-status` reports fallback to mock/local without requiring credentials or external API calls.
 - Loading/error states: stop backend temporarily and confirm affected pages show a visible error state instead of a blank page.
 - Responsive layout: check `/dashboard`, `/radar`, `/stocks/NVDA/explain`, `/stocks/NVDA/practice-plan`, `/dime-check`, `/journal`, `/settings`, and `/data-status` on desktop and a narrow mobile viewport; confirm there is no horizontal overflow.
 - Phase 1D restart check: save Settings and Journal through the frontend, restart only the backend, then confirm the saved Risk Profile and latest Journal entry remain visible.
@@ -82,6 +84,7 @@ Confirm these endpoints return HTTP 200 and expected fields:
 - `POST /api/dime/check-price`: `status`, `data_freshness`, `explanation_trace`, `reason`, `action`
 - `GET /api/data-status`: provider health, freshness, and limitations
 - `GET /api/data-status`: provider readiness fields include `active_provider`, `provider_type`, `is_live_market_data_connected`, `is_dime_price_source_connected`, `has_trading_integration`, `is_discovery_local_rule_based`, and `provider_status`
+- `GET /api/data-status`: `provider_status` includes `provider_available`, `is_degraded`, `fallback_used`, `fallback_reason`, `limitations`, `freshness_label`, and `disclaimer`
 
 ## Phase 1D QA Result
 
