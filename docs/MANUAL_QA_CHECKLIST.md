@@ -18,13 +18,18 @@ npm run dev
 
 ## Browser Checks
 
-- Dashboard: open `/dashboard`; confirm market summary, Radar preview, and `ข้อมูลนี้ไม่ใช่ราคาจาก Dime โดยตรง` are visible.
-- Radar: open `/radar`; confirm NVDA, AMD, and TSLA render with score, status, reasons, cautions, and freshness.
-- Stock Explain: open `/stocks/NVDA/explain`; confirm it is not blank and shows symbol, company name, status, price, VWAP, support, resistance, reasons, cautions, explanation trace, data freshness, Radar button, and Practice Plan button.
-- Practice Plan: open `/stocks/NVDA/practice-plan`; confirm it shows backend mock plan data and does not show `frontend fallback`.
-- Dime Check: open `/dime-check`; enter `134` for NVDA and confirm status `ไม่ควรไล่ซื้อ`.
+- Dashboard: open `/dashboard`; confirm market summary, Radar preview, warning box, freshness card, and `ข้อมูลนี้ไม่ใช่ราคาจาก Dime โดยตรง` are visible.
+- Dashboard flow: click `ไปที่ Radar`.
+- Radar: confirm NVDA, AMD, and TSLA render with score, status, reasons, cautions, and freshness.
+- Radar flow: click `ดูคำอธิบาย` for NVDA.
+- Stock Explain: confirm it is not blank and shows symbol, company name, status, price, VWAP, support, resistance, reasons, cautions, explanation trace, data freshness, Radar button, and Practice Plan button.
+- Stock Explain flow: click `ไปที่แผนวิเคราะห์จำลอง`.
+- Practice Plan: confirm it shows backend mock plan data, warning box, explanation trace, and does not show `frontend fallback`.
+- Practice Plan flow: click `ตรวจสอบราคาจริงใน Dime`.
+- Dime Check: enter `134` for NVDA and confirm status `ไม่ควรไล่ซื้อ`, reason, Risk:Reward, action, disclaimer, and explanation trace.
 - Dime Check: enter `131` for NVDA and confirm status `แผนยังอยู่ในเกณฑ์`.
 - Dime Check: enter `128` for NVDA and confirm status `ราคายังไม่เข้าโซน`.
+- Dime Check flow: click `บันทึกบทเรียนใน Journal`.
 - Journal: open `/journal`; confirm Thai placeholders `เหตุผล` and `บทเรียนที่ได้`.
 - Journal: save a valid entry and confirm `บันทึกเรียบร้อย` appears.
 - Journal: confirm the new item appears in `รายการล่าสุด` without manually refreshing.
@@ -36,6 +41,7 @@ npm run dev
 - Settings: navigate away and back to `/settings`; confirm saved values remain visible during the same backend session.
 - Settings persistence: restart the backend and confirm saved values remain visible.
 - Data Status: open `/data-status`; confirm polished Thai provider and health labels.
+- Loading/error states: stop backend temporarily and confirm affected pages show a visible error state instead of a blank page.
 
 ## Forbidden Wording Check
 

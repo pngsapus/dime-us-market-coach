@@ -1,4 +1,7 @@
+import { Card } from "@/components/Card";
 import { FormBanner } from "@/components/FormBanner";
+import { PageActions } from "@/components/PageActions";
+import { PageHeader } from "@/components/PageHeader";
 import { SubmitButton } from "@/components/SubmitButton";
 import { backendFetch } from "@/lib/serverApi";
 import type { RiskProfile } from "@/lib/types";
@@ -32,16 +35,17 @@ export default async function SettingsPage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold">Settings / Risk Profile</h1>
-        <p className="mt-1 text-sm text-muted">ใช้กำหนดเพดานความเสี่ยงสำหรับแผนวิเคราะห์จำลอง</p>
-      </header>
+      <PageHeader
+        title="ตั้งค่า Risk Profile"
+        description="กำหนดเพดานความเสี่ยงที่ใช้คำนวณแผนวิเคราะห์จำลอง"
+      />
+      <PageActions actions={[{ href: "/journal", label: "ไปที่บันทึกการฝึกวิเคราะห์" }, { href: "/data-status", label: "ดูสถานะข้อมูล" }]} />
 
       {params.saved === "1" && <FormBanner type="success">บันทึก Risk Profile เรียบร้อย</FormBanner>}
       {params.error && <FormBanner type="error">{params.error}</FormBanner>}
       {!result.ok && <FormBanner type="error">ไม่สามารถโหลด Risk Profile จาก backend ได้ กำลังแสดงค่าเริ่มต้นชั่วคราว</FormBanner>}
 
-      <section className="rounded-md border border-line bg-white p-6 shadow-sm">
+      <Card>
         <form action="/settings/save" method="post" className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="text-sm">
@@ -62,7 +66,7 @@ export default async function SettingsPage({ searchParams }: PageProps) {
           </div>
           <SubmitButton idleLabel="บันทึก Risk Profile" loadingLabel="กำลังบันทึก..." />
         </form>
-      </section>
+      </Card>
     </div>
   );
 }

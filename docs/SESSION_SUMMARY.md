@@ -67,3 +67,17 @@ Replaced in-memory persistence for Settings and Journal with SQLite while keepin
 - `journal_entries` stores journal entries and returns them newest first.
 - Tests use `DIME_DB_PATH` to isolate SQLite data in a temporary database.
 - Persistence now survives backend restart, while market data and Dime price checks remain mock-only.
+
+## Phase 1C Core UX Polish
+
+Date: 2026-05-28
+
+Improved the frontend user flow and clarity without changing backend contracts or connecting external services.
+
+- Added reusable UI components: `PageHeader`, `Card`, `DataFreshnessCard`, `ExplanationTrace`, `WarningBox`, `EmptyState`, `ErrorState`, and `SuccessBanner`.
+- Kept `MetricCard` and `StatusBadge` as shared primitives and reused them more consistently.
+- Improved page-to-page actions for the intended flow: Dashboard -> Radar -> Stock Explain -> Practice Plan -> Dime Check -> Journal.
+- Clarified that market/stock data is mock-only and not direct Dime realtime price.
+- Improved Dime Check result presentation with status, reason, Risk:Reward, action, disclaimer, and explanation trace.
+- Added app-level loading and error states to avoid blank white pages.
+- Polished Thai labels in the sidebar and key pages.

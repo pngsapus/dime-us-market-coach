@@ -1,8 +1,12 @@
 import { ApiErrorState } from "@/components/ApiErrorState";
-import { Freshness } from "@/components/Freshness";
+import { Card } from "@/components/Card";
+import { DataFreshnessCard } from "@/components/DataFreshnessCard";
+import { ExplanationTrace } from "@/components/ExplanationTrace";
 import { MetricCard } from "@/components/MetricCard";
 import { PageActions } from "@/components/PageActions";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
+import { WarningBox } from "@/components/WarningBox";
 import { getPracticePlan } from "@/lib/api";
 
 type PageProps = {
@@ -16,10 +20,7 @@ export default async function PracticePlanPage({ params }: PageProps) {
   if (!result.ok) {
     return (
       <div className="space-y-5">
-        <header>
-          <h1 className="text-2xl font-semibold">{symbol.toUpperCase()} แผนวิเคราะห์จำลอง</h1>
-          <p className="mt-1 text-sm text-muted">ไม่สามารถโหลดแผนจาก backend mock API ได้</p>
-        </header>
+        <PageHeader title={`${symbol.toUpperCase()} แผนวิเคราะห์จำลอง`} description="ไม่สามารถโหลดแผนจาก backend mock API ได้" />
         <ApiErrorState retryHref={`/stocks/${symbol}/practice-plan`} />
         <PageActions actions={[{ href: `/stocks/${symbol}/explain`, label: "กลับไป Stock Explain" }]} />
       </div>
@@ -30,20 +31,24 @@ export default async function PracticePlanPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold">{plan.symbol} แผนวิเคราะห์จำลอง</h1>
-        <p className="mt-1 text-sm text-muted">{plan.disclaimer}</p>
-        <p className="mt-1 text-sm text-muted">ข้อมูลนี้ไม่ใช่ราคาจาก Dime โดยตรง</p>
-      </header>
+      <PageHeader
+        title={`${plan.symbol} แผนวิเคราะห์จำลอง`}
+        description={`${plan.disclaimer} · ข้อมูลนี้ไม่ใช่ราคาจาก Dime โดยตรง`}
+        status={plan.status}
+      />
 
       <PageActions
         actions={[
-          { href: `/stocks/${plan.symbol}/explain`, label: "กลับไป Stock Explain" },
-          { href: "/dime-check", label: "ตรวจสอบราคาจริงใน Dime", primary: true },
+          { href: `/stocks/${plan.symbol}/explain`, label: "กลับไปหน้าอธิบายหุ้น" },
+          { href: `/dime-check?symbol=${plan.symbol}`, label: "ตรวจสอบราคาจริงใน Dime", primary: true },
         ]}
       />
 
-      <section className="rounded-md border border-line bg-white p-6 shadow-sm">
+      <WarningBox>
+        แผนนี้เป็นแบบจำลองเพื่อฝึกประเมินความเสี่ยง ผู้ใช้ต้องตรวจสอบราคาจริงใน Dime ด้วยตนเอง
+      </WarningBox>
+
+      <Card>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold">{plan.plan_type}</h2>
           <StatusBadge status={plan.status} />
@@ -59,31 +64,26 @@ export default async function PracticePlanPage({ params }: PageProps) {
           <MetricCard label="ความเสี่ยงจำลอง" value={`${plan.expected_loss_thb.toLocaleString()} บาท`} tone="warning" />
           <MetricCard label="ผลตอบแทนจำลองตามแผน" value={`${plan.expected_profit_thb.toLocaleString()} บาท`} />
         </div>
-      </section>
+      </Card>
 
       <section className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-md border border-line bg-white p-6 shadow-sm">
+        <Card>
           <h2 className="text-base font-semibold">เหตุผลของแผน</h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-muted">
             {plan.reasons.map((item) => <li key={item}>{item}</li>)}
           </ul>
-        </div>
-        <div className="rounded-md border border-line bg-white p-6 shadow-sm">
+        </Card>
+        <Card>
           <h2 className="text-base font-semibold">ข้อควรระวัง</h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-muted">
             {plan.cautions.map((item) => <li key={item}>{item}</li>)}
           </ul>
-        </div>
+        </Card>
       </section>
 
-      <section className="rounded-md border border-line bg-white p-6 shadow-sm">
-        <h2 className="text-base font-semibold">Explanation trace</h2>
-        <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-6 text-muted">
-          {plan.explanation_trace.map((item) => <li key={item}>{item}</li>)}
-        </ol>
-      </section>
+      <ExplanationTrace items={plan.explanation_trace} />
 
-      <Freshness freshness={plan.data_freshness} />
+      <DataFreshnessCard freshness={plan.data_freshness} />
     </div>
   );
 }

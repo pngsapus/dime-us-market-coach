@@ -1,4 +1,8 @@
+import { Card } from "@/components/Card";
+import { EmptyState } from "@/components/EmptyState";
 import { FormBanner } from "@/components/FormBanner";
+import { PageActions } from "@/components/PageActions";
+import { PageHeader } from "@/components/PageHeader";
 import { SubmitButton } from "@/components/SubmitButton";
 import { API_BASE } from "@/lib/serverApi";
 
@@ -33,16 +37,17 @@ export default async function JournalPage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold">บันทึกการฝึกวิเคราะห์</h1>
-        <p className="mt-1 text-sm text-muted">บันทึกเหตุผล ผลลัพธ์ และบทเรียนจากการฝึกวิเคราะห์</p>
-      </header>
+      <PageHeader
+        title="บันทึกการฝึกวิเคราะห์"
+        description="จบ workflow ด้วยการบันทึกเหตุผล ผลลัพธ์ และบทเรียนที่ได้จากแผนจำลอง"
+      />
+      <PageActions actions={[{ href: "/dime-check", label: "กลับไป Dime Check" }, { href: "/dashboard", label: "เริ่มดูภาพรวมใหม่" }]} />
 
       {params.saved === "1" && <FormBanner type="success">บันทึกเรียบร้อย</FormBanner>}
       {params.error && <FormBanner type="error">{params.error}</FormBanner>}
       {!result.ok && <FormBanner type="error">ไม่สามารถโหลดรายการบันทึกจาก backend ได้</FormBanner>}
 
-      <section className="rounded-md border border-line bg-white p-6 shadow-sm">
+      <Card>
         <form action="/journal/save" method="post" className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-2">
             <input name="symbol" defaultValue="NVDA" className="rounded-md border border-line px-3 py-2 text-sm" placeholder="Symbol" />
@@ -53,9 +58,9 @@ export default async function JournalPage({ searchParams }: PageProps) {
           </div>
           <SubmitButton idleLabel="บันทึก" loadingLabel="กำลังบันทึก..." />
         </form>
-      </section>
+      </Card>
 
-      <section className="rounded-md border border-line bg-white p-6 shadow-sm">
+      <Card>
         <h2 className="text-base font-semibold">รายการล่าสุด</h2>
         <div className="mt-3 divide-y divide-line">
           {entries.map((entry) => (
@@ -66,9 +71,9 @@ export default async function JournalPage({ searchParams }: PageProps) {
               {entry.lesson_learned && <div className="mt-1 text-muted">บทเรียนที่ได้: {entry.lesson_learned}</div>}
             </div>
           ))}
-          {entries.length === 0 && <div className="py-3 text-sm text-muted">ยังไม่มีบันทึก</div>}
+          {entries.length === 0 && <EmptyState title="ยังไม่มีบันทึก" detail="เมื่อบันทึกแผนหรือบทเรียน รายการจะแสดงตรงนี้และเก็บใน SQLite" />}
         </div>
-      </section>
+      </Card>
     </div>
   );
 }

@@ -1,9 +1,13 @@
-import { Freshness } from "@/components/Freshness";
 import { getMarketSummary, getRadar } from "@/lib/api";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ApiErrorState } from "@/components/ApiErrorState";
+import { Card } from "@/components/Card";
+import { DataFreshnessCard } from "@/components/DataFreshnessCard";
+import { EmptyState } from "@/components/EmptyState";
 import { MetricCard } from "@/components/MetricCard";
 import { PageActions } from "@/components/PageActions";
+import { PageHeader } from "@/components/PageHeader";
+import { WarningBox } from "@/components/WarningBox";
 
 export default async function DashboardPage() {
   const [summaryResult, radarResult] = await Promise.all([getMarketSummary(), getRadar()]);
@@ -15,11 +19,15 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold">ภาพรวมตลาดวันนี้</h1>
-        <p className="mt-1 text-sm text-muted">ใช้เพื่อวิเคราะห์และวางแผนเท่านั้น ข้อมูลนี้ไม่ใช่ราคาจาก Dime โดยตรง</p>
-      </header>
-      <section className="rounded-md border border-line bg-white p-6 shadow-sm">
+      <PageHeader
+        title="ภาพรวมตลาดวันนี้"
+        description="เริ่มจากภาพรวมตลาด แล้วค่อยไปดู Radar หุ้นที่ควรติดตามจากข้อมูลจำลอง"
+        status={summary.status}
+      />
+      <WarningBox title="ขอบเขตข้อมูล">
+        ข้อมูลนี้ไม่ใช่ราคาจาก Dime โดยตรง และใช้เพื่อวิเคราะห์/วางแผนเท่านั้น
+      </WarningBox>
+      <Card>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <div className="text-xl font-semibold">{summary.headline}</div>
@@ -32,11 +40,11 @@ export default async function DashboardPage() {
             <MetricCard key={name} label={name} value={value.toLocaleString()} />
           ))}
         </div>
-      </section>
+      </Card>
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        <section className="rounded-md border border-line bg-white p-6 shadow-sm">
+        <Card>
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-base font-semibold">ลำดับการติดตามจาก Radar</h2>
+            <h2 className="text-base font-semibold">ขั้นถัดไป: เลือกหุ้นจาก Radar</h2>
             <PageActions actions={[{ href: "/radar", label: "ไปที่ Radar", primary: true }]} />
           </div>
           <div className="mt-4 divide-y divide-line">
@@ -49,10 +57,10 @@ export default async function DashboardPage() {
                 <StatusBadge status={stock.status} />
               </div>
             ))}
-            {radar.length === 0 && <div className="py-3 text-sm text-muted">ยังโหลด Radar ไม่ได้ กรุณาตรวจสอบสถานะ backend</div>}
+            {radar.length === 0 && <EmptyState title="ยังไม่มีข้อมูล Radar" detail="กรุณาตรวจสอบสถานะ backend หรือโหลดหน้าใหม่อีกครั้ง" />}
           </div>
-        </section>
-        <Freshness freshness={summary.data_freshness} />
+        </Card>
+        <DataFreshnessCard freshness={summary.data_freshness} />
       </div>
     </div>
   );

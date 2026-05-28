@@ -5,13 +5,13 @@ import { usePathname } from "next/navigation";
 import { BarChart3, BookOpen, ClipboardCheck, Gauge, LineChart, Radar, Settings, ShieldAlert } from "lucide-react";
 
 const nav = [
-  { href: "/dashboard", label: "Dashboard", icon: Gauge, match: (path: string) => path === "/dashboard" },
+  { href: "/dashboard", label: "ภาพรวมตลาด", icon: Gauge, match: (path: string) => path === "/dashboard" },
   { href: "/radar", label: "Radar", icon: Radar, match: (path: string) => path === "/radar" },
-  { href: "/stocks/NVDA/explain", label: "Stock Explain", icon: BookOpen, match: (path: string) => path.includes("/explain") },
+  { href: "/stocks/NVDA/explain", label: "อธิบายหุ้น", icon: BookOpen, match: (path: string) => path.includes("/explain") },
   { href: "/stocks/NVDA/practice-plan", label: "แผนวิเคราะห์จำลอง", icon: ClipboardCheck, match: (path: string) => path.includes("/practice-plan") },
-  { href: "/dime-check", label: "Dime Check", icon: ShieldAlert, match: (path: string) => path === "/dime-check" },
+  { href: "/dime-check", label: "ตรวจราคา Dime", icon: ShieldAlert, match: (path: string) => path === "/dime-check" },
   { href: "/journal", label: "บันทึกการฝึกวิเคราะห์", icon: BarChart3, match: (path: string) => path === "/journal" },
-  { href: "/settings", label: "Settings", icon: Settings, match: (path: string) => path === "/settings" },
+  { href: "/settings", label: "ตั้งค่า Risk Profile", icon: Settings, match: (path: string) => path === "/settings" },
   { href: "/data-status", label: "สถานะข้อมูล", icon: LineChart, match: (path: string) => path === "/data-status" },
 ];
 

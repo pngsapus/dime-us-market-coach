@@ -22,6 +22,10 @@
 - Phase 1B: replaced in-memory Settings and Journal storage with SQLite persistence.
 - Phase 1B: added automatic SQLite schema initialization under `backend/data/app.db`.
 - Phase 1B: added backend tests for repository reload persistence and newest-first Journal ordering.
+- Phase 1C: added reusable frontend UI primitives for page headers, cards, data freshness, explanation traces, warnings, empty/error states, and success banners.
+- Phase 1C: tightened the main user flow from Dashboard to Radar, Stock Explain, Practice Plan, Dime Check, and Journal.
+- Phase 1C: polished Thai copy and clarified mock/degraded data boundaries across key pages.
+- Phase 1C: added app-level loading and error states to avoid blank pages.
 
 ## Next
 

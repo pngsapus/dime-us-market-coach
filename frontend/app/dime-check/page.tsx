@@ -1,7 +1,11 @@
 import { ApiErrorState } from "@/components/ApiErrorState";
+import { Card } from "@/components/Card";
+import { ExplanationTrace } from "@/components/ExplanationTrace";
 import { MetricCard } from "@/components/MetricCard";
 import { PageActions } from "@/components/PageActions";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
+import { WarningBox } from "@/components/WarningBox";
 import type { DimeCheckResponse } from "@/lib/types";
 
 type PageProps = {
@@ -32,15 +36,18 @@ export default async function DimeCheckPage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold">ตรวจสอบราคาจริงใน Dime</h1>
-        <p className="mt-1 text-sm text-muted">กรอกราคาที่เห็นใน Dime เอง เพื่อเช็กว่าแผนวิเคราะห์จำลองยังอยู่ในเกณฑ์หรือไม่</p>
-        <p className="mt-1 text-sm text-muted">ข้อมูลนี้ไม่ใช่ราคาจาก Dime โดยตรง และระบบไม่ส่งคำสั่งซื้อขาย</p>
-      </header>
+      <PageHeader
+        title="ตรวจสอบราคาจริงใน Dime"
+        description="กรอกราคาที่เห็นใน Dime ด้วยตนเอง เพื่อเช็กว่าแผนวิเคราะห์จำลองยังอยู่ในเกณฑ์หรือไม่"
+      />
 
-      <PageActions actions={[{ href: "/stocks/NVDA/practice-plan", label: "กลับไปแผนวิเคราะห์จำลอง" }, { href: "/journal", label: "ไปที่บันทึกการฝึกวิเคราะห์" }]} />
+      <PageActions actions={[{ href: `/stocks/${symbol}/practice-plan`, label: "กลับไปแผนวิเคราะห์จำลอง" }, { href: "/journal", label: "ไปที่บันทึกการฝึกวิเคราะห์" }]} />
 
-      <section className="rounded-md border border-line bg-white p-6 shadow-sm">
+      <WarningBox title="จุดตรวจสอบสำคัญ">
+        ระบบไม่ดึงราคาจาก Dime โดยตรง ผู้ใช้ต้องกรอกราคาที่เห็นใน Dime เองก่อนประเมินแผน
+      </WarningBox>
+
+      <Card>
         <form className="grid gap-4 sm:grid-cols-3" action="/dime-check">
           <label className="text-sm">
             <span className="font-medium">Symbol</span>
@@ -58,12 +65,12 @@ export default async function DimeCheckPage({ searchParams }: PageProps) {
             ตรวจสอบแผน
           </button>
         </form>
-      </section>
+      </Card>
 
       {result && !result.ok && <ApiErrorState retryHref={`/dime-check?symbol=${symbol}&price=${price}`} />}
 
       {result?.ok && (
-        <section className="rounded-md border border-line bg-white p-6 shadow-sm">
+        <Card>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 className="text-lg font-semibold">ผลตรวจสอบแผน</h2>
@@ -85,16 +92,12 @@ export default async function DimeCheckPage({ searchParams }: PageProps) {
             <div className="mt-1 text-sm text-muted">{result.data.action}</div>
           </div>
 
-          {result.data.explanation_trace.length > 0 && (
-            <div className="mt-5">
-              <h3 className="text-sm font-semibold">Explanation trace</h3>
-              <ol className="mt-2 list-decimal space-y-2 pl-5 text-sm leading-6 text-muted">
-                {result.data.explanation_trace.map((item) => <li key={item}>{item}</li>)}
-              </ol>
-            </div>
-          )}
-        </section>
+          <div className="mt-5">
+            <PageActions actions={[{ href: "/journal", label: "บันทึกบทเรียนใน Journal", primary: true }]} />
+          </div>
+        </Card>
       )}
+      {result?.ok && <ExplanationTrace items={result.data.explanation_trace} />}
     </div>
   );
 }

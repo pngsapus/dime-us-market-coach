@@ -1,8 +1,12 @@
 import Link from "next/link";
-import { Freshness } from "@/components/Freshness";
 import { StatusBadge } from "@/components/StatusBadge";
 import { getRadar } from "@/lib/api";
 import { ApiErrorState } from "@/components/ApiErrorState";
+import { Card } from "@/components/Card";
+import { DataFreshnessCard } from "@/components/DataFreshnessCard";
+import { EmptyState } from "@/components/EmptyState";
+import { PageActions } from "@/components/PageActions";
+import { PageHeader } from "@/components/PageHeader";
 
 export default async function RadarPage() {
   const result = await getRadar();
@@ -13,13 +17,14 @@ export default async function RadarPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold">Radar</h1>
-        <p className="mt-1 text-sm text-muted">แสดงหุ้นที่น่าติดตามจากเงื่อนไขจำลอง พร้อมเหตุผลและข้อควรระวัง</p>
-      </header>
+      <PageHeader
+        title="Radar"
+        description="เลือกหุ้นที่ควรติดตามจากเงื่อนไขจำลอง แล้วอ่านเหตุผลก่อนดูแผนวิเคราะห์"
+      />
+      <PageActions actions={[{ href: "/dashboard", label: "กลับ Dashboard" }]} />
       <div className="grid gap-4">
         {stocks.map((stock) => (
-          <article key={stock.symbol} className="rounded-md border border-line bg-white p-6 shadow-sm">
+          <Card key={stock.symbol}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold">{stock.symbol} · {stock.company_name}</h2>
@@ -44,10 +49,10 @@ export default async function RadarPage() {
               <Link href={`/stocks/${stock.symbol}/explain`} className="rounded-md border border-line px-3 py-2 text-sm font-medium hover:bg-panel">ดูคำอธิบาย</Link>
               <Link href={`/stocks/${stock.symbol}/practice-plan`} className="rounded-md border border-line px-3 py-2 text-sm font-medium hover:bg-panel">ดูแผนวิเคราะห์จำลอง</Link>
             </div>
-          </article>
+          </Card>
         ))}
       </div>
-      {stocks.length > 0 ? <Freshness freshness={stocks[0].data_freshness} /> : <ApiErrorState detail="Radar ยังไม่มีข้อมูลจาก backend" retryHref="/radar" />}
+      {stocks.length > 0 ? <DataFreshnessCard freshness={stocks[0].data_freshness} /> : <EmptyState title="ยังไม่มีหุ้นใน Radar" detail="ถ้า backend พร้อมใช้งานแล้ว ให้ลองโหลดหน้าใหม่อีกครั้ง" />}
     </div>
   );
 }
