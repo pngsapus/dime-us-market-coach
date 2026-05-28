@@ -1,7 +1,7 @@
 import type { DataFreshness } from "@/lib/types";
 
 export function DataFreshnessCard({ freshness }: { freshness: DataFreshness }) {
-  const providerLabel = freshness.provider === "mock_provider" ? "ผู้ให้ข้อมูลจำลอง" : freshness.provider;
+  const providerLabel = freshness.provider === "mock_provider" || freshness.provider === "mock" ? "ผู้ให้ข้อมูลจำลอง" : freshness.provider;
   const stateLabel = freshness.is_stale ? "ข้อมูลล่าช้า / degraded" : "ข้อมูลจำลองพร้อมใช้";
   const toneClass = freshness.is_stale ? "border-amber-100 bg-amber-50" : "border-line bg-white";
 

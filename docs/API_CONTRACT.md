@@ -25,6 +25,7 @@ Base URL: `/api`
 - Dime Check never assumes live Dime price; it only evaluates the user-entered price.
 - Settings and Journal responses keep the same JSON shape while using SQLite persistence in V1.
 - Discovery responses are local/mock only and must include `explanation_trace`, `data_freshness`, and a non-order disclaimer.
+- Provider status responses must clearly show that mock/local is active, live data is not connected, Dime price source is manual input only, and no trading integration exists.
 
 ## Discovery Response
 
@@ -64,6 +65,34 @@ Base URL: `/api`
 ```
 
 `GET /radar` remains compatible with the existing `StockSnapshot[]` response shape, but the list is ordered by the latest local discovery ranking.
+
+## Data Status Response
+
+`GET /data-status` keeps existing fields and adds provider readiness details:
+
+```json
+{
+  "provider": "mock",
+  "health": "healthy",
+  "message": "ใช้ mock/local provider ข้อมูลนี้ไม่ใช่ราคาจาก Dime โดยตรง",
+  "active_provider": "mock",
+  "provider_type": "mock/local",
+  "is_live_market_data_connected": false,
+  "is_dime_price_source_connected": false,
+  "has_trading_integration": false,
+  "is_discovery_local_rule_based": true,
+  "provider_status": {
+    "provider_name": "mock",
+    "provider_type": "mock/local",
+    "is_available": true,
+    "is_live_data": false,
+    "is_direct_dime_data": false,
+    "freshness_label": "ข้อมูลจำลองในเครื่องพร้อมใช้งาน",
+    "limitations": [],
+    "disclaimer": "ข้อมูลจาก provider mock/local ใช้เพื่อการวิเคราะห์และฝึกวางแผนเท่านั้น ไม่ใช่ราคาจาก Dime โดยตรง"
+  }
+}
+```
 
 ## Dime Check Request
 

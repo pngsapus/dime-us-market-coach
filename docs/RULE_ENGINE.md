@@ -21,6 +21,8 @@ Rule decisions are deterministic and based on explicit inputs.
 
 Discovery scoring is deterministic and uses local/mock data only.
 
+Phase 2B keeps the same scoring rules, but the discovery engine now reads the stock universe from the active provider layer instead of owning raw universe data directly. The active provider is still `mock`.
+
 Weighted score:
 
 - `trend_score` weight 22%.

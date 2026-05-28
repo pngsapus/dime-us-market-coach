@@ -13,6 +13,19 @@ class DataFreshness(BaseModel):
     note: str
 
 
+class ProviderStatus(BaseModel):
+    provider_name: str
+    provider_type: str
+    is_available: bool
+    is_live_data: bool
+    is_direct_dime_data: bool
+    last_updated: datetime
+    freshness_label: str
+    limitations: list[str]
+    disclaimer: str
+    degraded_reason: str = ""
+
+
 class Zone(BaseModel):
     low: float
     high: float
@@ -186,6 +199,13 @@ class DataStatus(BaseModel):
     freshness: DataFreshness
     message: str
     limitations: list[str]
+    active_provider: str
+    provider_type: str
+    is_live_market_data_connected: bool
+    is_dime_price_source_connected: bool
+    has_trading_integration: bool
+    is_discovery_local_rule_based: bool
+    provider_status: ProviderStatus
 
 
 class Notification(BaseModel):

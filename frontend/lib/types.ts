@@ -130,4 +130,22 @@ export type DataStatus = {
   freshness: DataFreshness;
   message: string;
   limitations: string[];
+  active_provider: string;
+  provider_type: string;
+  is_live_market_data_connected: boolean;
+  is_dime_price_source_connected: boolean;
+  has_trading_integration: boolean;
+  is_discovery_local_rule_based: boolean;
+  provider_status: {
+    provider_name: string;
+    provider_type: string;
+    is_available: boolean;
+    is_live_data: boolean;
+    is_direct_dime_data: boolean;
+    last_updated: string;
+    freshness_label: string;
+    limitations: string[];
+    disclaimer: string;
+    degraded_reason: string;
+  };
 };

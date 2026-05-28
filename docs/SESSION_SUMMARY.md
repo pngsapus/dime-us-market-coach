@@ -142,3 +142,23 @@ Validation:
 
 - Backend tests: `21 passed`.
 - Frontend build: `npm run build` completed successfully.
+
+## Phase 2B Data Provider Layer Preparation
+
+Date: 2026-05-28
+
+Prepared the backend data provider boundary for future real market data while keeping mock/local as the only active provider.
+
+- Added `MarketDataProvider` interface methods for market summary, stock universe, stock snapshots, and provider status.
+- Added `provider_registry.py` with `MARKET_DATA_PROVIDER=mock` default behavior.
+- Unknown provider names safely fall back to mock/local and are reported in Data Status.
+- Moved the 10-symbol local universe into `MockMarketDataProvider`.
+- Updated `LocalMarketDiscoveryEngine` so it scores the active provider universe instead of owning raw data directly.
+- Kept `/api/discovery/latest`, `/api/discovery/run`, `/api/radar`, stock explain, practice plan, Dime Check, and market summary compatible.
+- Expanded `/api/data-status` to report active provider, provider type, live-data connection state, manual Dime input state, trading integration state, and local rule-based discovery status.
+- Updated Data Status UI to show provider readiness metrics.
+
+Validation:
+
+- Backend tests: `26 passed`.
+- Frontend build: `npm run build` completed successfully.

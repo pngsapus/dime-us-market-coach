@@ -23,3 +23,10 @@
 - Store generated discovery runtime JSON under `backend/data/discovery/` and keep those JSON files out of git.
 - Keep `/api/radar` compatible while adding richer discovery endpoints for the Radar UI.
 - Expand the local mock universe to 10 US stocks/ETFs so Stock Explain and Practice Plan can support Radar symbols beyond NVDA, AMD, and TSLA.
+
+## 2026-05-28 Phase 2B
+
+- Add a provider registry with `MARKET_DATA_PROVIDER=mock` as the default.
+- Keep mock/local as the only active provider and do not introduce API keys or external calls.
+- If an unknown provider is configured, fall back to mock/local and surface the fallback through `/api/data-status`.
+- Move local stock universe ownership into the provider layer so discovery can later score a real provider universe without changing the scoring contract.

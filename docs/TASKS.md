@@ -36,6 +36,11 @@
 - Phase 2A: added discovery output folders under `backend/data/discovery/` with runtime JSON ignored by git.
 - Phase 2A: added backend tests for discovery scoring, endpoints, and Radar compatibility.
 - Phase 2A.1: cleaned up Radar UX copy, clarified sidebar vs recommended next steps, simplified cards, and translated discovery traces/categories for beginners.
+- Phase 2B: added backend market data provider abstraction and provider registry.
+- Phase 2B: kept `MARKET_DATA_PROVIDER=mock` as the default and added unknown-provider fallback to mock/local.
+- Phase 2B: moved the local stock universe behind the mock provider so discovery consumes provider data.
+- Phase 2B: expanded `/api/data-status` with provider readiness, live-data, Dime-source, trading-integration, and discovery-mode fields.
+- Phase 2B: added backend tests for provider registry, fallback behavior, mock provider output, provider-based discovery, and data status.
 
 ## Next
 

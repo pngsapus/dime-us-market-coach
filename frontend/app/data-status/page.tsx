@@ -12,7 +12,7 @@ export default async function DataStatusPage() {
     return <ApiErrorState retryHref="/data-status" />;
   }
   const status = result.data;
-  const providerLabel = status.provider === "mock_provider" ? "ผู้ให้ข้อมูลจำลอง" : status.provider;
+  const providerLabel = status.provider === "mock_provider" || status.provider === "mock" ? "ผู้ให้ข้อมูลจำลอง" : status.provider;
   const healthLabel = status.health === "healthy" ? "พร้อมใช้งาน" : status.health === "degraded" ? "ข้อมูลล่าช้า" : "ไม่พร้อมใช้งาน";
   return (
     <div className="space-y-6">
@@ -30,9 +30,26 @@ export default async function DataStatusPage() {
           </div>
           <StatusBadge status={healthLabel} />
         </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <StatusMetric label="ประเภท provider" value={status.provider_type} />
+          <StatusMetric label="ข้อมูลตลาดจริง" value={status.is_live_market_data_connected ? "เชื่อมต่อแล้ว" : "ยังไม่เชื่อมต่อ"} />
+          <StatusMetric label="ราคาจาก Dime" value={status.is_dime_price_source_connected ? "เชื่อมต่อแล้ว" : "manual input เท่านั้น"} />
+          <StatusMetric label="Trading integration" value={status.has_trading_integration ? "เชื่อมต่อแล้ว" : "ไม่มีการเชื่อมต่อ"} />
+          <StatusMetric label="Discovery engine" value={status.is_discovery_local_rule_based ? "local rule-based mock data" : "ไม่พร้อมใช้งาน"} />
+          <StatusMetric label="ความพร้อม provider" value={status.provider_status.freshness_label} />
+        </div>
         <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-muted">{status.limitations.map((item) => <li key={item}>{item}</li>)}</ul>
       </Card>
       <DataFreshnessCard freshness={status.freshness} />
+    </div>
+  );
+}
+
+function StatusMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-md border border-line bg-panel p-3">
+      <div className="text-xs font-medium text-muted">{label}</div>
+      <div className="mt-1 text-sm font-semibold">{value}</div>
     </div>
   );
 }

@@ -4,6 +4,24 @@
 
 FastAPI exposes `/api/*` endpoints. Mock market data is isolated behind `MarketDataProvider` so real providers can be added later without rewriting rule logic.
 
+## Provider Layer
+
+Phase 2B prepares a provider registry while keeping mock/local as the only active provider.
+
+- Provider interface: `app/services/providers/base.py`.
+- Active mock provider: `app/services/providers/mock_provider.py`.
+- Provider resolver: `app/services/providers/provider_registry.py`.
+- Config key: `MARKET_DATA_PROVIDER`, defaulting to `mock`.
+- Unknown provider names safely fall back to mock/local and are reported as degraded in `/api/data-status`.
+- No API keys, real providers, Dime API, or external calls are used.
+
+Provider methods:
+
+- `get_market_summary()`
+- `get_stock_universe()`
+- `get_stock_snapshot(symbol)`
+- `get_data_status()`
+
 Core deterministic services:
 
 - `RuleEngine`: produces statuses from explicit input values.
@@ -42,7 +60,7 @@ Next.js App Router pages mirror the V1 workflow:
 
 ## Data Flow
 
-Mock provider -> deterministic engines -> API contracts -> Thai UI pages.
+Provider registry -> mock/local provider -> deterministic engines -> API contracts -> Thai UI pages.
 
 Settings and Journal use SQLite persistence behind stable API contracts.
 
@@ -57,5 +75,6 @@ Phase 2A adds a local discovery layer for Radar without external market data.
 - Timestamped snapshots are written under `backend/data/discovery/history/`.
 - Runtime JSON outputs are ignored by git; `.gitkeep` files preserve the folders.
 - `/api/radar` remains compatible by returning `StockSnapshot[]`, ordered from the latest discovery ranking.
+- Phase 2B moves local universe access behind the provider layer; discovery scores the active provider universe instead of owning raw data directly.
 
 No AI decision-making is used in V1.

@@ -18,6 +18,7 @@ from app.main import app
 from app.schemas.contracts import JournalEntryCreate, RiskProfile, Zone
 from app.services.discovery_engine import LocalMarketDiscoveryEngine
 from app.services.providers.mock_provider import provider
+from app.services.providers.provider_registry import get_active_provider, resolve_provider
 from app.services.risk_engine import RiskEngine
 from app.services.rule_engine import RuleEngine
 from app.services.sqlite_store import SQLiteStore
@@ -110,6 +111,32 @@ def test_explanation_trace_exists_for_every_analysis_result() -> None:
         assert stock.explanation_trace
 
 
+def test_provider_registry_defaults_to_mock_provider() -> None:
+    active_provider = get_active_provider()
+    assert active_provider.provider_name == "mock"
+    assert active_provider.provider_type == "mock/local"
+
+
+def test_provider_registry_unknown_provider_falls_back_to_mock() -> None:
+    active_provider, resolution = resolve_provider("not-real")
+    assert active_provider.provider_name == "mock"
+    assert resolution.used_fallback is True
+    assert resolution.requested_provider == "not-real"
+
+
+def test_mock_provider_output_shape() -> None:
+    status = provider.get_data_status()
+    universe = provider.get_stock_universe()
+    snapshot = provider.get_stock_snapshot("NVDA")
+    assert status.provider_name == "mock"
+    assert status.provider_type == "mock/local"
+    assert status.is_live_data is False
+    assert status.is_direct_dime_data is False
+    assert len(universe) == 10
+    assert snapshot.symbol == "NVDA"
+    assert snapshot.data_freshness.provider == "mock"
+
+
 def test_discovery_scoring_output_shape() -> None:
     engine = LocalMarketDiscoveryEngine(output_dir=Path(_test_data_dir.name) / "discovery_shape")
     result = engine.run(write_files=False)
@@ -140,7 +167,15 @@ def test_discovery_run_endpoint_writes_latest_output() -> None:
     assert response.status_code == 200
     payload = response.json()
     assert payload["results"]
-    assert payload["data_freshness"]["provider"] == "local_discovery_mock"
+    assert payload["data_freshness"]["provider"] == "mock"
+
+
+def test_discovery_engine_uses_provider_universe() -> None:
+    result = LocalMarketDiscoveryEngine(output_dir=Path(_test_data_dir.name) / "discovery_provider").run(write_files=False)
+    symbols = [item.symbol for item in result.results]
+    assert "NVDA" in symbols
+    assert "MSFT" in symbols
+    assert result.data_freshness.source == "local rule-based discovery over provider universe"
 
 
 def test_existing_radar_flow_uses_discovery_universe_compatibly() -> None:
@@ -163,6 +198,18 @@ def test_stock_explain_supports_new_discovery_symbol() -> None:
     assert payload["explanation_trace"]
     assert payload["reasons"]
     assert payload["cautions"]
+
+
+def test_data_status_reports_mock_local_provider() -> None:
+    response = client.get("/api/data-status")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["active_provider"] == "mock"
+    assert payload["provider_type"] == "mock/local"
+    assert payload["is_live_market_data_connected"] is False
+    assert payload["is_dime_price_source_connected"] is False
+    assert payload["has_trading_integration"] is False
+    assert payload["is_discovery_local_rule_based"] is True
 
 
 def test_settings_post_saves_values_and_get_returns_updated_values() -> None:
