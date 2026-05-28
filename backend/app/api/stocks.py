@@ -6,10 +6,8 @@ from app.schemas.contracts import PracticePlan, RiskProfile, Zone
 from app.services.explanation_engine import ExplanationEngine
 from app.services.providers.mock_provider import provider
 from app.services.risk_engine import RiskEngine
-from app.services.rule_engine import RuleEngine
 
 router = APIRouter(tags=["stocks"])
-rule_engine = RuleEngine()
 risk_engine = RiskEngine(settings.assumed_usd_thb)
 explanation_engine = ExplanationEngine()
 
@@ -18,28 +16,26 @@ def _default_profile() -> RiskProfile:
     return RiskProfile()
 
 
-def _plan_zones(symbol: str) -> tuple[Zone, float, float]:
+def _plan_zones(symbol: str, support: float | None = None, resistance: float | None = None, vwap: float | None = None) -> tuple[Zone, float, float]:
     zones = {
         "NVDA": (Zone(low=129.0, high=132.5), 126.0, 144.0),
         "AMD": (Zone(low=160.0, high=164.5), 156.5, 172.0),
         "TSLA": (Zone(low=174.0, high=178.5), 169.5, 188.0),
     }
-    return zones.get(symbol.upper(), zones["NVDA"])
+    if symbol.upper() in zones:
+        return zones[symbol.upper()]
+    if support is None or resistance is None or vwap is None:
+        return zones["NVDA"]
+    entry_low = round(max(support, vwap * 0.99), 2)
+    entry_high = round(max(entry_low + 0.01, min(vwap * 1.01, resistance * 0.98)), 2)
+    stop_loss = round(support * 0.98, 2)
+    take_profit = round(resistance, 2)
+    return Zone(low=entry_low, high=entry_high), stop_loss, take_profit
 
 
 @router.get("/stocks/{symbol}/explain")
 def explain_stock(symbol: str) -> dict:
-    stock = provider.get_stock(symbol)
-    rule_result = rule_engine.evaluate_stock(stock)
-    evaluated = stock.model_copy(
-        update={
-            "status": rule_result["status"],
-            "score": rule_result["score"],
-            "reasons": rule_result["reasons"],
-            "cautions": rule_result["cautions"],
-            "explanation_trace": stock.explanation_trace + rule_result["explanation_trace"],
-        }
-    )
+    evaluated = provider.get_stock(symbol)
     explanation = explanation_engine.explain_stock(evaluated)
     return {
         "stock": evaluated,
@@ -60,7 +56,7 @@ def explain_stock(symbol: str) -> dict:
 @router.get("/stocks/{symbol}/practice-plan", response_model=PracticePlan)
 def get_practice_plan(symbol: str) -> PracticePlan:
     stock = provider.get_stock(symbol)
-    entry_zone, stop_loss, take_profit = _plan_zones(stock.symbol)
+    entry_zone, stop_loss, take_profit = _plan_zones(stock.symbol, stock.support, stock.resistance, stock.vwap)
     profile = _default_profile()
     risk = risk_engine.calculate_plan(entry_zone, stop_loss, take_profit, profile)
     status = STATUS_INSUFFICIENT_DATA if stock.data_freshness.is_stale else STATUS_WAIT

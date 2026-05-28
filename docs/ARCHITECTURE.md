@@ -9,6 +9,7 @@ Core deterministic services:
 - `RuleEngine`: produces statuses from explicit input values.
 - `RiskEngine`: calculates Risk:Reward, max position size, expected loss, and expected profit.
 - `ExplanationEngine`: converts rule and plan results into beginner-friendly Thai with traceability.
+- `LocalMarketDiscoveryEngine`: ranks a local/mock US stock and ETF universe using deterministic scoring rules.
 - `DimeCostModel`: placeholder for future Dime fee/cost estimation.
 - `NotificationCenter`: placeholder for future in-app, LINE OA, Telegram, and email notifications.
 
@@ -44,5 +45,17 @@ Next.js App Router pages mirror the V1 workflow:
 Mock provider -> deterministic engines -> API contracts -> Thai UI pages.
 
 Settings and Journal use SQLite persistence behind stable API contracts.
+
+## Local Discovery
+
+Phase 2A adds a local discovery layer for Radar without external market data.
+
+- The local universe contains NVDA, AMD, MSFT, AAPL, TSLA, QQQ, COST, AMZN, GOOGL, and META.
+- Discovery scoring is deterministic and uses local fields such as trend, momentum, quality, valuation risk, volatility risk, liquidity, and beginner fit.
+- `GET /api/discovery/latest` returns the latest ranked output, creating a local mock run if no output exists yet.
+- `POST /api/discovery/run` runs the local scoring engine and writes `backend/data/discovery/latest_discovery.json`.
+- Timestamped snapshots are written under `backend/data/discovery/history/`.
+- Runtime JSON outputs are ignored by git; `.gitkeep` files preserve the folders.
+- `/api/radar` remains compatible by returning `StockSnapshot[]`, ordered from the latest discovery ranking.
 
 No AI decision-making is used in V1.

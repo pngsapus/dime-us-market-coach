@@ -16,3 +16,10 @@
 - Create the `backend/data` directory automatically if missing.
 - Keep API contracts stable for `GET/POST /api/settings/risk-profile` and `GET/POST /api/journal`.
 - Avoid migration tooling for now; use simple schema initialization in the backend repository layer.
+
+## 2026-05-28 Phase 2A
+
+- Add a local rule-based discovery engine before connecting any real market data provider.
+- Store generated discovery runtime JSON under `backend/data/discovery/` and keep those JSON files out of git.
+- Keep `/api/radar` compatible while adding richer discovery endpoints for the Radar UI.
+- Expand the local mock universe to 10 US stocks/ETFs so Stock Explain and Practice Plan can support Radar symbols beyond NVDA, AMD, and TSLA.

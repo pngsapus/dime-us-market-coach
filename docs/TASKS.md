@@ -28,9 +28,15 @@
 - Phase 1C: added app-level loading and error states to avoid blank pages.
 - Phase 1D: completed QA stabilization pass across key pages, API smoke checks, responsive layout checks, persistence restart checks, and forbidden wording scan.
 - Phase 1D: fixed small Thai copy/documentation inconsistencies found during QA, including remaining English page wording and below-zone Dime Check documentation.
+- Phase 2A: added a local rule-based market discovery engine with a 10-symbol mock US stock/ETF universe.
+- Phase 2A: added `GET /api/discovery/latest` and `POST /api/discovery/run`.
+- Phase 2A: updated Radar to show ranked discovery output with scoring categories, reasons, cautions, traces, and mock data warnings.
+- Phase 2A: updated Dashboard to preview the top 3 discovery items and latest discovery run time.
+- Phase 2A: expanded Stock Explain and Practice Plan compatibility for new local universe symbols.
+- Phase 2A: added discovery output folders under `backend/data/discovery/` with runtime JSON ignored by git.
+- Phase 2A: added backend tests for discovery scoring, endpoints, and Radar compatibility.
 
 ## Next
 
-- Add API integration tests for all endpoints.
 - Add frontend component tests or Playwright smoke tests.
 - Add real provider interface implementation only after explicit approval.

@@ -2,26 +2,14 @@ from fastapi import APIRouter
 
 from app.schemas.contracts import StockSnapshot
 from app.services.providers.mock_provider import provider
-from app.services.rule_engine import RuleEngine
+from app.services.discovery_engine import discovery_engine
 
 router = APIRouter(tags=["radar"])
-rule_engine = RuleEngine()
 
 
 @router.get("/radar", response_model=list[StockSnapshot])
 def get_radar() -> list[StockSnapshot]:
-    results: list[StockSnapshot] = []
-    for stock in provider.list_stocks():
-        rule_result = rule_engine.evaluate_stock(stock)
-        results.append(
-            stock.model_copy(
-                update={
-                    "status": rule_result["status"],
-                    "score": rule_result["score"],
-                    "reasons": rule_result["reasons"],
-                    "cautions": rule_result["cautions"],
-                    "explanation_trace": stock.explanation_trace + rule_result["explanation_trace"],
-                }
-            )
-        )
-    return results
+    latest = discovery_engine.latest()
+    ranked_symbols = [item.symbol for item in latest.results]
+    stocks_by_symbol = {stock.symbol: stock for stock in provider.list_stocks()}
+    return [stocks_by_symbol[symbol] for symbol in ranked_symbols if symbol in stocks_by_symbol]

@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 
 from fastapi import HTTPException
 
-from app.core.constants import STATUS_FOLLOW, STATUS_WAIT
 from app.schemas.contracts import DataFreshness, MarketSummary, StockSnapshot
+from app.services.discovery_engine import discovery_engine
 
 
 def _fresh(age_minutes: int = 12, stale: bool = False) -> DataFreshness:
@@ -19,68 +19,7 @@ def _fresh(age_minutes: int = 12, stale: bool = False) -> DataFreshness:
 
 class MockMarketDataProvider:
     def __init__(self) -> None:
-        self._stocks = {
-            "NVDA": StockSnapshot(
-                symbol="NVDA",
-                company_name="NVIDIA Corporation",
-                price=132.4,
-                vwap=129.8,
-                support=126.5,
-                resistance=138.0,
-                relative_volume=1.8,
-                market_context="กลุ่ม semiconductor ยังมีแรงติดตามจากธีม AI แต่ราคาผันผวนสูง",
-                score=82,
-                status=STATUS_FOLLOW,
-                reasons=["ราคาอยู่เหนือ VWAP", "Relative Volume สูง", "ยังอยู่ใกล้โซนแผนมากกว่าการไล่ราคา"],
-                cautions=["หุ้นผันผวนสูง", "หากราคาจริงใน Dime สูงกว่าโซนแผนควรรอจังหวะใหม่"],
-                explanation_trace=[
-                    "mock_provider โหลดข้อมูล NVDA",
-                    "price 132.4 > vwap 129.8",
-                    "relative_volume 1.8 >= 1.4",
-                ],
-                data_freshness=_fresh(),
-            ),
-            "AMD": StockSnapshot(
-                symbol="AMD",
-                company_name="Advanced Micro Devices, Inc.",
-                price=164.2,
-                vwap=165.1,
-                support=158.0,
-                resistance=172.0,
-                relative_volume=1.2,
-                market_context="ชิป AI ยังเป็นธีมหลัก แต่แรงยืนยันวันนี้ยังไม่เด่นเท่า NVDA",
-                score=64,
-                status=STATUS_WAIT,
-                reasons=["ราคาใกล้ VWAP", "ยังไม่เห็นแรงปริมาณซื้อขายชัดเจน"],
-                cautions=["ถ้าหลุดแนวรับ แผนจำลองควรถูกยกเลิก", "ควรรอข้อมูลยืนยันเพิ่ม"],
-                explanation_trace=[
-                    "mock_provider โหลดข้อมูล AMD",
-                    "price 164.2 <= vwap 165.1",
-                    "relative_volume 1.2 < 1.4",
-                ],
-                data_freshness=_fresh(),
-            ),
-            "TSLA": StockSnapshot(
-                symbol="TSLA",
-                company_name="Tesla, Inc.",
-                price=178.6,
-                vwap=181.3,
-                support=172.0,
-                resistance=190.0,
-                relative_volume=0.9,
-                market_context="หุ้นมีความผันผวนจากข่าวและ sentiment สูง จึงต้องเข้มงวดเรื่องความเสี่ยง",
-                score=45,
-                status=STATUS_WAIT,
-                reasons=["ราคายังต่ำกว่า VWAP", "Relative Volume ยังไม่ยืนยัน"],
-                cautions=["ข่าวเฉพาะบริษัทอาจทำให้ราคากระโดด", "ไม่ควรใช้แผนหากข้อมูล stale"],
-                explanation_trace=[
-                    "mock_provider โหลดข้อมูล TSLA",
-                    "price 178.6 <= vwap 181.3",
-                    "relative_volume 0.9 < 1.4",
-                ],
-                data_freshness=_fresh(92, True),
-            ),
-        }
+        self.discovery = discovery_engine
 
     def get_market_summary(self) -> MarketSummary:
         return MarketSummary(
@@ -105,13 +44,13 @@ class MockMarketDataProvider:
         )
 
     def list_stocks(self) -> list[StockSnapshot]:
-        return list(self._stocks.values())
+        return [self.discovery.to_stock_snapshot(item) for item in self.discovery.universe()]
 
     def get_stock(self, symbol: str) -> StockSnapshot:
-        stock = self._stocks.get(symbol.upper())
-        if not stock:
+        item = self.discovery.get_universe_item(symbol)
+        if not item:
             raise HTTPException(status_code=404, detail=f"Symbol {symbol.upper()} is not available in mock data")
-        return stock
+        return self.discovery.to_stock_snapshot(item)
 
 
 provider = MockMarketDataProvider()

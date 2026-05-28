@@ -46,6 +46,59 @@ class MarketSummary(BaseModel):
     explanation_trace: list[str]
 
 
+class LocalStockUniverseItem(BaseModel):
+    symbol: str
+    name: str
+    sector_theme: str
+    mock_price: float
+    mock_daily_change_pct: float
+    trend_score: int
+    momentum_score: int
+    quality_score: int
+    valuation_risk_score: int
+    volatility_risk_score: int
+    liquidity_score: int
+    beginner_fit_score: int
+    beginner_description: str
+    data_status: str
+    vwap: float
+    support: float
+    resistance: float
+    relative_volume: float
+    data_freshness: DataFreshness
+
+
+class DiscoveryResult(BaseModel):
+    symbol: str
+    name: str
+    sector_theme: str
+    rank: int
+    final_score: int
+    category: str
+    key_reasons: list[str]
+    caution_points: list[str]
+    explanation_trace: list[str]
+    data_freshness: DataFreshness
+    disclaimer: str
+    mock_price: float
+    mock_daily_change_pct: float
+    trend_score: int
+    momentum_score: int
+    quality_score: int
+    valuation_risk_score: int
+    volatility_risk_score: int
+    liquidity_score: int
+    beginner_fit_score: int
+
+
+class DiscoveryRun(BaseModel):
+    generated_at: datetime
+    universe_count: int
+    data_freshness: DataFreshness
+    disclaimer: str
+    results: list[DiscoveryResult]
+
+
 class RiskProfile(BaseModel):
     beginner_level: Literal["new", "learning", "confident"] = "new"
     max_loss_per_trade_thb: float = Field(default=1000, gt=0)

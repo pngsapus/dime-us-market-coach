@@ -16,3 +16,26 @@ Rule decisions are deterministic and based on explicit inputs.
 - If user-entered Dime price is below the entry zone, status is `ราคายังไม่เข้าโซน`.
 - If price is inside the entry zone but Risk:Reward is below profile minimum, status is `ไม่ควรไล่ซื้อ`.
 - If price is inside the entry zone and Risk:Reward passes, status is `แผนยังอยู่ในเกณฑ์`.
+
+## Phase 2A Local Discovery Scoring
+
+Discovery scoring is deterministic and uses local/mock data only.
+
+Weighted score:
+
+- `trend_score` weight 22%.
+- `momentum_score` weight 18%.
+- `quality_score` weight 16%.
+- `liquidity_score` weight 16%.
+- `beginner_fit_score` weight 18%.
+- `valuation_risk_score` subtracts 5%.
+- `volatility_risk_score` subtracts 5%.
+
+Category rules:
+
+- If `data_freshness.is_stale` is true, category is `ข้อมูลไม่เพียงพอ`.
+- If `volatility_risk_score >= 78` or `valuation_risk_score >= 82`, category is `เสี่ยงสูงควรระวัง`.
+- If final score is at least 70, category is `ควรติดตาม`.
+- Otherwise category is `รอจังหวะ`.
+
+Every discovery result must include `key_reasons`, `caution_points`, `explanation_trace`, `data_freshness`, and a disclaimer that the data is local/mock and not direct Dime realtime price.

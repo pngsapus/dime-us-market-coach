@@ -35,6 +35,37 @@ export type MarketSummary = {
   explanation_trace: string[];
 };
 
+export type DiscoveryResult = {
+  symbol: string;
+  name: string;
+  sector_theme: string;
+  rank: number;
+  final_score: number;
+  category: string;
+  key_reasons: string[];
+  caution_points: string[];
+  explanation_trace: string[];
+  data_freshness: DataFreshness;
+  disclaimer: string;
+  mock_price: number;
+  mock_daily_change_pct: number;
+  trend_score: number;
+  momentum_score: number;
+  quality_score: number;
+  valuation_risk_score: number;
+  volatility_risk_score: number;
+  liquidity_score: number;
+  beginner_fit_score: number;
+};
+
+export type DiscoveryRun = {
+  generated_at: string;
+  universe_count: number;
+  data_freshness: DataFreshness;
+  disclaimer: string;
+  results: DiscoveryResult[];
+};
+
 export type StockExplain = {
   stock: StockSnapshot;
   symbol: string;

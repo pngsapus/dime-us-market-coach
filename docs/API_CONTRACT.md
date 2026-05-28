@@ -6,6 +6,8 @@ Base URL: `/api`
 
 - `GET /market/summary`
 - `GET /radar`
+- `GET /discovery/latest`
+- `POST /discovery/run`
 - `GET /stocks/{symbol}/explain`
 - `GET /stocks/{symbol}/practice-plan`
 - `POST /dime/check-price`
@@ -22,6 +24,45 @@ Base URL: `/api`
 - Market-related responses include `data_freshness`.
 - Dime Check never assumes live Dime price; it only evaluates the user-entered price.
 - Settings and Journal responses keep the same JSON shape while using SQLite persistence in V1.
+- Discovery responses are local/mock only and must include `explanation_trace`, `data_freshness`, and a non-order disclaimer.
+
+## Discovery Response
+
+`GET /discovery/latest` and `POST /discovery/run` return:
+
+```json
+{
+  "generated_at": "2026-05-28T00:00:00Z",
+  "universe_count": 10,
+  "data_freshness": {},
+  "disclaimer": "ข้อมูล Discovery เป็นข้อมูลจำลองในเครื่อง ไม่ใช่ราคาจาก Dime โดยตรง และไม่ใช่คำสั่งซื้อ",
+  "results": [
+    {
+      "symbol": "MSFT",
+      "name": "Microsoft Corporation",
+      "sector_theme": "Cloud and AI software",
+      "rank": 1,
+      "final_score": 75,
+      "category": "ควรติดตาม",
+      "key_reasons": [],
+      "caution_points": [],
+      "explanation_trace": [],
+      "data_freshness": {},
+      "mock_price": 426.8,
+      "mock_daily_change_pct": 0.4,
+      "trend_score": 82,
+      "momentum_score": 68,
+      "quality_score": 92,
+      "valuation_risk_score": 48,
+      "volatility_risk_score": 38,
+      "liquidity_score": 94,
+      "beginner_fit_score": 84
+    }
+  ]
+}
+```
+
+`GET /radar` remains compatible with the existing `StockSnapshot[]` response shape, but the list is ordered by the latest local discovery ranking.
 
 ## Dime Check Request
 

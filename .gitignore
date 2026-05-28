@@ -13,3 +13,5 @@ dist/
 
 backend/data/*.db
 backend/data/*.db-*
+backend/data/discovery/latest_discovery.json
+backend/data/discovery/history/*.json

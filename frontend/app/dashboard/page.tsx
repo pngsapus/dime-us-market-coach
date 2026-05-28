@@ -1,4 +1,4 @@
-import { getMarketSummary, getRadar } from "@/lib/api";
+import { getDiscoveryLatest, getMarketSummary } from "@/lib/api";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ApiErrorState } from "@/components/ApiErrorState";
 import { Card } from "@/components/Card";
@@ -10,12 +10,13 @@ import { PageHeader } from "@/components/PageHeader";
 import { WarningBox } from "@/components/WarningBox";
 
 export default async function DashboardPage() {
-  const [summaryResult, radarResult] = await Promise.all([getMarketSummary(), getRadar()]);
+  const [summaryResult, discoveryResult] = await Promise.all([getMarketSummary(), getDiscoveryLatest()]);
   if (!summaryResult.ok) {
     return <ApiErrorState retryHref="/dashboard" />;
   }
   const summary = summaryResult.data;
-  const radar = radarResult.ok ? radarResult.data : [];
+  const discovery = discoveryResult.ok ? discoveryResult.data : null;
+  const radar = discovery?.results.slice(0, 3) ?? [];
 
   return (
     <div className="space-y-6">
@@ -47,20 +48,25 @@ export default async function DashboardPage() {
             <h2 className="text-base font-semibold">ขั้นถัดไป: เลือกหุ้นจาก Radar</h2>
             <PageActions actions={[{ href: "/radar", label: "ไปที่ Radar", primary: true }]} />
           </div>
+          {discovery && (
+            <div className="mt-2 text-xs text-muted">
+              Discovery ล่าสุด {new Date(discovery.generated_at).toLocaleString("th-TH")} · ข้อมูล local/mock ไม่ใช่ราคาจาก Dime โดยตรง
+            </div>
+          )}
           <div className="mt-4 divide-y divide-line">
             {radar.map((stock) => (
               <div key={stock.symbol} className="flex items-center justify-between gap-4 py-3">
                 <div>
-                  <div className="font-medium">{stock.symbol} · {stock.company_name}</div>
-                  <div className="text-sm text-muted">Score {stock.score} · VWAP {stock.vwap}</div>
+                  <div className="font-medium">#{stock.rank} {stock.symbol} · {stock.name}</div>
+                  <div className="text-sm text-muted">Score {stock.final_score} · {stock.sector_theme}</div>
                 </div>
-                <StatusBadge status={stock.status} />
+                <StatusBadge status={stock.category} />
               </div>
             ))}
             {radar.length === 0 && <EmptyState title="ยังไม่มีข้อมูล Radar" detail="กรุณาตรวจสอบสถานะ backend หรือโหลดหน้าใหม่อีกครั้ง" />}
           </div>
         </Card>
-        <DataFreshnessCard freshness={summary.data_freshness} />
+        <DataFreshnessCard freshness={discovery?.data_freshness ?? summary.data_freshness} />
       </div>
     </div>
   );

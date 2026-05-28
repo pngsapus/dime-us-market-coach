@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import data_status, dime, journal, market, notifications, radar, settings, stocks
+from app.api import data_status, dime, discovery, journal, market, notifications, radar, settings, stocks
 
 app = FastAPI(
     title="Dime US Market Coach",
@@ -19,6 +19,7 @@ app.add_middleware(
 
 app.include_router(market.router, prefix="/api")
 app.include_router(radar.router, prefix="/api")
+app.include_router(discovery.router, prefix="/api")
 app.include_router(stocks.router, prefix="/api")
 app.include_router(dime.router, prefix="/api")
 app.include_router(journal.router, prefix="/api")

@@ -19,9 +19,12 @@ npm run dev
 ## Browser Checks
 
 - Dashboard: open `/dashboard`; confirm market summary, Radar preview, warning box, freshness card, and `ข้อมูลนี้ไม่ใช่ราคาจาก Dime โดยตรง` are visible.
+- Dashboard Discovery preview: confirm top 3 discovery items show rank, score, category, latest run time, and local/mock freshness.
 - Dashboard flow: click `ไปที่ Radar`.
-- Radar: confirm NVDA, AMD, and TSLA render with score, status, reasons, cautions, and freshness.
+- Radar: confirm the local universe renders NVDA, AMD, MSFT, AAPL, TSLA, QQQ, COST, AMZN, GOOGL, and META.
+- Radar: confirm each item shows rank, final score, category/status badge, score components, key reasons, caution points, explanation trace, and freshness/mock warning.
 - Radar flow: click `ดูคำอธิบาย` for NVDA.
+- Radar compatibility: click `ดูคำอธิบาย` for a newer universe symbol such as MSFT and confirm Stock Explain works.
 - Stock Explain: confirm it is not blank and shows symbol, company name, status, price, VWAP, support, resistance, reasons, cautions, explanation trace, data freshness, Radar button, and Practice Plan button.
 - Stock Explain flow: click `ไปที่แผนวิเคราะห์จำลอง`.
 - Practice Plan: confirm it shows backend mock plan data, warning box, explanation trace, and does not show `frontend fallback`.
@@ -41,6 +44,7 @@ npm run dev
 - Settings: navigate away and back to `/settings`; confirm saved values remain visible during the same backend session.
 - Settings persistence: restart the backend and confirm saved values remain visible.
 - Data Status: open `/data-status`; confirm polished Thai provider and health labels.
+- Data Status: confirm it says market data is mock/local, Dime price source is manual input only, no external API is connected, no trading integration exists, and discovery is local rule-based mock data.
 - Loading/error states: stop backend temporarily and confirm affected pages show a visible error state instead of a blank page.
 - Responsive layout: check `/dashboard`, `/radar`, `/stocks/NVDA/explain`, `/stocks/NVDA/practice-plan`, `/dime-check`, `/journal`, `/settings`, and `/data-status` on desktop and a narrow mobile viewport; confirm there is no horizontal overflow.
 - Phase 1D restart check: save Settings and Journal through the frontend, restart only the backend, then confirm the saved Risk Profile and latest Journal entry remain visible.
@@ -66,7 +70,10 @@ Confirm these endpoints return HTTP 200 and expected fields:
 
 - `GET /api/market/summary`: `status`, `data_freshness`, `explanation_trace`, `cautions`
 - `GET /api/radar`: each stock has `status`, `data_freshness`, `explanation_trace`, `reasons`, `cautions`
+- `GET /api/discovery/latest`: ranked results with `rank`, `final_score`, `category`, `key_reasons`, `caution_points`, `explanation_trace`, `data_freshness`, and disclaimer
+- `POST /api/discovery/run`: creates or updates local discovery output and returns the same ranked shape
 - `GET /api/stocks/NVDA/explain`: `status`, `data_freshness`, `explanation_trace`, `reasons`, `cautions`
+- `GET /api/stocks/MSFT/explain`: confirms Stock Explain supports new local universe symbols
 - `GET /api/stocks/NVDA/practice-plan`: `status`, `data_freshness`, `explanation_trace`, `reasons`, `cautions`
 - `POST /api/dime/check-price`: `status`, `data_freshness`, `explanation_trace`, `reason`, `action`
 - `GET /api/data-status`: provider health, freshness, and limitations

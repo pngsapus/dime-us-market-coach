@@ -100,3 +100,24 @@ Validation:
 
 - Backend tests: `16 passed in 0.56s`.
 - Frontend build: `npm run build` completed successfully.
+
+## Phase 2A Local Market Discovery Engine
+
+Date: 2026-05-28
+
+Added a local/mock discovery layer to make Radar more systematic without connecting real market data or external APIs.
+
+- Added `LocalMarketDiscoveryEngine` with a 10-symbol local universe: NVDA, AMD, MSFT, AAPL, TSLA, QQQ, COST, AMZN, GOOGL, and META.
+- Discovery scoring uses deterministic local fields: trend, momentum, quality, liquidity, beginner fit, valuation risk, and volatility risk.
+- Added `GET /api/discovery/latest` and `POST /api/discovery/run`.
+- Discovery runs write `backend/data/discovery/latest_discovery.json` and timestamped snapshots under `backend/data/discovery/history/`.
+- Kept `/api/radar` compatible as `StockSnapshot[]`, now ordered by the latest discovery ranking.
+- Updated Radar to show rank, final score, category, score components, key reasons, cautions, explanation trace, and mock data disclaimer.
+- Updated Dashboard to show top 3 discovery results, latest run time, and local/mock freshness.
+- Expanded Stock Explain and Practice Plan compatibility to all local universe symbols.
+- Updated Data Status to clarify that discovery is local rule-based mock data, Dime price is manual input only, and no external/trading integrations are connected.
+
+Validation:
+
+- Backend tests: `21 passed in 0.61s`.
+- Frontend build: `npm run build` completed successfully.

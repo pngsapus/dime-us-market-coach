@@ -16,6 +16,7 @@ from app.core.constants import (
 )
 from app.main import app
 from app.schemas.contracts import JournalEntryCreate, RiskProfile, Zone
+from app.services.discovery_engine import LocalMarketDiscoveryEngine
 from app.services.providers.mock_provider import provider
 from app.services.risk_engine import RiskEngine
 from app.services.rule_engine import RuleEngine
@@ -107,6 +108,59 @@ def test_explanation_trace_exists_for_every_analysis_result() -> None:
         result = rule_engine.evaluate_stock(stock)
         assert result["explanation_trace"]
         assert stock.explanation_trace
+
+
+def test_discovery_scoring_output_shape() -> None:
+    engine = LocalMarketDiscoveryEngine(output_dir=Path(_test_data_dir.name) / "discovery_shape")
+    result = engine.run(write_files=False)
+    assert result.universe_count == 10
+    assert result.disclaimer
+    assert result.results[0].rank == 1
+    assert result.results[0].final_score >= result.results[-1].final_score
+    assert result.results[0].key_reasons
+    assert result.results[0].caution_points
+    assert result.results[0].explanation_trace
+    assert result.results[0].data_freshness
+
+
+def test_discovery_latest_endpoint_returns_ranked_results() -> None:
+    response = client.get("/api/discovery/latest")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["universe_count"] == 10
+    assert payload["results"][0]["rank"] == 1
+    assert payload["results"][0]["final_score"] >= payload["results"][-1]["final_score"]
+    assert payload["results"][0]["disclaimer"]
+
+
+def test_discovery_run_endpoint_writes_latest_output() -> None:
+    response = client.post("/api/discovery/run")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["results"]
+    assert payload["data_freshness"]["provider"] == "local_discovery_mock"
+
+
+def test_existing_radar_flow_uses_discovery_universe_compatibly() -> None:
+    response = client.get("/api/radar")
+    assert response.status_code == 200
+    payload = response.json()
+    symbols = [item["symbol"] for item in payload]
+    assert "NVDA" in symbols
+    assert "MSFT" in symbols
+    assert len(payload) == 10
+    assert payload[0]["score"] >= payload[-1]["score"]
+    assert payload[0]["explanation_trace"]
+
+
+def test_stock_explain_supports_new_discovery_symbol() -> None:
+    response = client.get("/api/stocks/MSFT/explain")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["symbol"] == "MSFT"
+    assert payload["explanation_trace"]
+    assert payload["reasons"]
+    assert payload["cautions"]
 
 
 def test_settings_post_saves_values_and_get_returns_updated_values() -> None:

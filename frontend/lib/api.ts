@@ -1,4 +1,4 @@
-import type { DataStatus, MarketSummary, PracticePlan, RiskProfile, StockExplain, StockSnapshot } from "./types";
+import type { DataStatus, DiscoveryRun, MarketSummary, PracticePlan, RiskProfile, StockExplain, StockSnapshot } from "./types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000/api";
 
@@ -32,6 +32,10 @@ export function getMarketSummary() {
 
 export function getRadar() {
   return getJson<StockSnapshot[]>("/radar");
+}
+
+export function getDiscoveryLatest() {
+  return getJson<DiscoveryRun>("/discovery/latest");
 }
 
 export function getStockExplain(symbol: string) {
