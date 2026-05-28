@@ -1,0 +1,55 @@
+# Session Summary
+
+Date: 2026-05-28
+
+Created the initial Dime US Market Coach scaffold in `C:\Dime\dime-us-market-coach`.
+
+Implemented:
+
+- FastAPI backend with mock-only market data.
+- Deterministic rule, risk, and explanation services.
+- V1 API endpoints required by the product brief.
+- Next.js frontend pages for Dashboard, Radar, Stock Explain, Practice Plan, Dime Check, Journal, Settings, and Data Status.
+- Project docs and agent guardrails.
+
+Known mock-only areas:
+
+- Market data.
+- Dime price source.
+- Journal and settings persistence.
+- Notifications.
+- Dime cost model.
+
+## Phase 1A Fix & Polish
+
+Date: 2026-05-28
+
+Updated the app after manual QA findings:
+
+- Fixed `/stocks/NVDA/explain` by using the current async dynamic route params shape.
+- Replaced silent frontend fallback data with explicit degraded/error states.
+- Expanded Stock Explain to show symbol, company name, status, price, VWAP, support, resistance, reasons, cautions, explanation trace, freshness, and navigation buttons.
+- Improved Practice Plan so it uses backend mock API data and no longer shows `frontend fallback`.
+- Improved Dime Check result card with status, reason, Risk:Reward, action, explanation trace, and non-order disclaimer.
+- Changed below-entry-zone Dime Check result to `ราคายังไม่เข้าโซน`.
+- Polished Thai labels in Journal, Settings, Data Status, freshness display, and sidebar.
+- Added endpoint tests for Stock Explain, Practice Plan, and Dime Check scenarios.
+
+## Settings And Journal Save Fix
+
+Date: 2026-05-28
+
+Updated the Settings and Journal forms after manual QA found save buttons appeared to do nothing:
+
+- Replaced fragile client-only save handlers with normal form submissions to Next route handlers.
+- Route handlers call the configured backend mock API base URL and redirect back with visible success or error banners.
+- Settings save posts exactly the `RiskProfile` schema and converts numeric fields before sending.
+- Journal save posts exactly the `JournalEntryCreate` schema, validates required fields, and refreshes the list after redirect.
+- Backend Journal validation now rejects empty symbol, empty decision, and entries with neither reason nor lesson learned.
+- Persistence remains in-memory for V1 and lasts until backend restart.
+
+## Settings Save Stuck Fix
+
+Date: 2026-05-28
+
+Manual QA showed `บันทึก Risk Profile` changed to `กำลังบันทึก...` and never completed. The cause was the client submit button setting its own pending state during the click event, which disabled the submit button before the native form submission could reliably finish. The fix uses React form submission status instead of click-time state and adds a timeout wrapper around backend fetch calls so `/settings/save` always redirects to either `/settings?saved=1` or `/settings?error=...`.

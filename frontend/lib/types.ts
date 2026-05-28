@@ -1,0 +1,101 @@
+export type DataFreshness = {
+  provider: string;
+  source: string;
+  as_of: string;
+  age_minutes: number;
+  is_stale: boolean;
+  note: string;
+};
+
+export type StockSnapshot = {
+  symbol: string;
+  company_name: string;
+  price: number;
+  vwap: number;
+  support: number;
+  resistance: number;
+  relative_volume: number;
+  market_context: string;
+  score: number;
+  status: string;
+  reasons: string[];
+  cautions: string[];
+  explanation_trace: string[];
+  data_freshness: DataFreshness;
+};
+
+export type MarketSummary = {
+  headline: string;
+  tone: string;
+  status: string;
+  summary_th: string;
+  indices: Record<string, number>;
+  cautions: string[];
+  data_freshness: DataFreshness;
+  explanation_trace: string[];
+};
+
+export type StockExplain = {
+  stock: StockSnapshot;
+  symbol: string;
+  company_name: string;
+  status: string;
+  price: number;
+  vwap: number;
+  support: number;
+  resistance: number;
+  reasons: string[];
+  cautions: string[];
+  summary_th: string;
+  important_zones: Record<string, number>;
+  beginner_notes: string[];
+  explanation_trace: string[];
+  data_freshness: DataFreshness;
+};
+
+export type DimeCheckResponse = {
+  symbol: string;
+  dime_price: number;
+  status: string;
+  reason: string;
+  action: string;
+  risk_reward: number;
+  passes_risk_profile: boolean;
+  explanation_trace: string[];
+  data_freshness: DataFreshness;
+};
+
+export type PracticePlan = {
+  symbol: string;
+  plan_type: string;
+  entry_zone: { low: number; high: number };
+  stop_loss: number;
+  take_profit: number;
+  risk_reward: number;
+  max_position_size_shares: number;
+  expected_loss_thb: number;
+  expected_profit_thb: number;
+  passes_risk_profile: boolean;
+  status: string;
+  disclaimer: string;
+  reasons: string[];
+  cautions: string[];
+  explanation_trace: string[];
+  data_freshness: DataFreshness;
+};
+
+export type RiskProfile = {
+  beginner_level: "new" | "learning" | "confident";
+  max_loss_per_trade_thb: number;
+  max_trades_per_day: number;
+  minimum_risk_reward: number;
+  preferred_setup_type: string;
+};
+
+export type DataStatus = {
+  provider: string;
+  health: "healthy" | "degraded" | "unavailable";
+  freshness: DataFreshness;
+  message: string;
+  limitations: string[];
+};
